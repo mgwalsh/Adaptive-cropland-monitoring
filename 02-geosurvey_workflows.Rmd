@@ -1,6 +1,6 @@
 # GeoSurvey prediction workflows {#geosurvey}
 
-*Edited by: M.G. Walsh, ... ?*
+*Edited by: Markus Walsh, ... ?*
 
 Grateful acknowledgement to the team at [**QED**](https://qed.ai/), who built and maintain the GeoSurvey App
 
