@@ -17,7 +17,7 @@ Current problems in all landscapes and ecosystems include: stagnant or decreasin
 
 ## General dynamics of systems with "fixes that fail"
 
-The current developed country agricultural paradigm is to manage agricultultural productivity and production is based on perceived productivity/production gaps. The main idea is that if the perceived gaps are large relative to what is economically desired, fixes (like input subsidies, genomic technologies and agronomic management reccomendations etc) will be implemented to remedy/close those perceived gaps. The basic dynamics of this type of thinking are shown in ...
+The current developed country agricultural paradigm is to manage agricultultural productivity and production is based on perceived productivity/production gaps. The main idea is that if and when the perceived gaps are large relative to what is economically desired, fixes (like input subsidies, genomic technologies and agronomic management reccomendations etc) will be implemented to remedy/close those perceived gaps. The basic dynamics of this type of thinking are shown in ...
 
 ```{r current_balancing_approach, echo=FALSE, fig.align="center", fig.cap="Current paradigm for yield/production fix management dynamics.", out.width = '50%', }
 knitr::include_graphics("figures/current_balancing_loop.png")
@@ -36,7 +36,7 @@ knitr::include_graphics("figures/FTF_loop.png")
 * FTF structures are often part of more elaborate structures in which managers and policy makers are dealing with symptoms rather than with the underlying problem(s). They also often become dependent on fixes, applying them over and over, and expecting different results.
 * FTF dynamical structures also underpin related system archetypes wherein cooperative influences in institutions are unintentionally responsible for creating problems for the involved parties. For additional insights into this phenomenon see e.g.: [**Accidental Adversaries**](https://thesystemsthinker.com/accidental-adversaries-when-friends-become-foes/).
 
-While the last point may appear to be a complete aside, it is also real human force in hindering development progress in Africa and its global markets for food. Much like during the "Scramble for Africa" (cite), which occurred between 1881 and 1914, nations are now still in a more less "friendly" competition to improve living conditions for African smallholder farmers. The problem is that those nations can, and probably have, become accidental adversaries, just because of the underlying dynamical systems that are driven by misunderstandings and often by only partial knowledge of what the facts or development needs really are.
+While the last point may appear to be a complete aside, it is also real human force in hindering development progress in Africa and its global markets for food. Much like during the "Scramble for Africa" (cite), which occurred between 1881 and 1914, nations are now still in a more less "friendly" competition to improve living conditions for African smallholder farmers. The problem is that those nations can, and probably have, become accidental adversaries, just because of the underlying dynamical systems that are driven by misunderstandings and often by only partial knowledge of what the facts or development needs really are. In turn these conflicts currently shape African economies.
 
 ## Adaptive management of landscapes
 
