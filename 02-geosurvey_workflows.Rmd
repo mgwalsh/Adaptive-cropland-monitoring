@@ -1,15 +1,14 @@
 # GeoSurvey prediction workflows {#geosurvey}
 
-*Edited by: Markus Walsh, ... ?*
+*Edited by: Markus Walsh, Edwin Adkins ... ?*
 
-Grateful acknowledgement to the team at [**QED**](https://qed.ai/), who built and maintain the GeoSurvey App
-
+We gratefully acknowledge the team at [**QED**](https://qed.ai/), who built and maintain the GeoSurvey App
 
 ## Introduction
 
 Quantifying the geographical extent, location and spatial dynamics of cropland areas, rural and urban settlements and woody vegetation cover provides essential land cover information for monitoring and managing human dominated (*"anthropic"*) landscapes and the associated socio-economic, health, environmental and ecological impacts. Large portions of Africa remain *"terra incognita"* in this context. This is the main motivation and thematic context for the reproducible prediction workflows that are presented here. 
 
-[**GeoSurvey**](https://geosurvey.qed.ai/) is a platform for analyzing geospatial land cover observations. High resolution satellite images, mobile phone photography, and drone imagery can be examined and sytematically labeled by either trained photo interpreters and/or by *"crowds"* of citizen scientists. When done with care, these observations result in large, well-structured, properly labeled, geospatial datasets that are suitable for machine learning and geostatistical predictions of land cover and in some instances for inferring land use. The detailed manual for conducting your own GeoSurveys is available at: [**GeoSurvey manual**](https://docs.google.com/document/d/1y-HYUSYpDVESPdmEcl3I2kuL0bwrT41wMiq0zE9uzOs/edit). The manual should definitely be consulted to obtain information about how GeoSurvey about how to carry out potentially high value. We shall not cover that in this chapter and assume that we already have GeoSurvey data and colocated spatial covariates in hand.
+[**GeoSurvey**](https://geosurvey.qed.ai/) is a platform for analyzing geospatial land cover observations. High resolution satellite images, mobile phone photography, and drone imagery can be sytematically labeled by either trained photo interpreters and/or by *"crowds"* of citizen scientists. When done with care, these observations result in large, well-structured, properly labeled, geospatial datasets that are suitable for machine learning and geostatistical predictions of land cover and in some instances for inferring land use. The detailed manual for conducting your own GeoSurveys is available at: [**GeoSurvey manual**](https://docs.google.com/document/d/1y-HYUSYpDVESPdmEcl3I2kuL0bwrT41wMiq0zE9uzOs/edit). The manual should definitely be consulted to obtain information about how GeoSurvey about how to carry out potentially high value. We shall not cover that in this chapter and assume that we already have GeoSurvey data and colocated spatial covariates in hand.
 
 The main reason for gathering GeoSurvey observations is is that this allows us to rapidly assess where in a particular country significant impacts of humans on ecosystem processess can be expected. We have frequently been able to provide highly accurate of where anthropic impacts are like to occur in a country, and in remote places that are often not reachable by car.
 
@@ -42,7 +41,6 @@ suppressPackageStartupMessages({
 })
 ```
 
-
 ### Load all the data locally
 
 There are already many good examples of GeoSurveys of different countries that are available. For Africa, exemplar, *"tidied-up"* data are publicly available on the associated [**Open Science Framework**](https://osf.io/vxc97/) GeoSurvey repository, which also mirrors all of the associated data assembly and prediction code at [**Github**](https://github.com/mgwalsh/Cropland-Atlas).
@@ -73,7 +71,6 @@ grids <- stack(glist)
 grids ## examines the structure of the grid stack and its dimensions
 ```
 
-
 ### Spatial covariates (grids)
 
 People ask what are all the spatial covariates that are used in the various predictions and where do they come from? While these keep changing these as we get access to new open RS/GIS data. However, they are often long-term averages and/or fairly slow geosptial variables, which are periodically updated as warranted. For Tanzania these currently include:
@@ -102,13 +99,12 @@ People ask what are all the spatial covariates that are used in the various pred
     - CIESIN/FaceBook high resolution settlement data [**HRSL**](https://ciesin.columbia.edu/data/hrsl/)
     - ISRIC predictive soil maps [**SoilGrids**](https://soilgrids.org)
     - AfSIS prediction results from previous GeoSurveys [**AfSIS**](https://osf.io/vxc97/)
-6. High-resolution remote sensing data where needed and affordable e.g.,
+6. High-resolution remote sensing data where warranted and affordable e.g.,
     - from [**Planet Labs**](https://www.planet.com/)
     - from [**MAXAR**](https://www.digitalglobe.com/)
     
 The full current listing of the Tanzania grids that we are experimenting with is available in one of the [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other possibilities which could be used for this.
   
-
 ### Assemble all of the data {#geosurvey_step1}
 
 The chunk below assembles the GeoSurvey and gridded data. It includes total building counts and cropland proportion estimates based on a grid count (both per 6.25 ha quadrat), and it subsequently combines everything with the gridded variables in a consistent dataframe that can be used for spatial prediction.
@@ -180,7 +176,6 @@ gsdat <- gsdat[complete.cases(gsdat[ ,c(10:13,19:67)]),] ## removes incomplete c
 gsdat$observer <- sub("@.*", "", as.character(gsdat$observer)) ## shortens observer ID's
 ```
 
-
 ### GeoSurvey dataframe 
 
 The main end product of all of this wrangling (\@ref(geosurvey_step1) is a dataframe called `gsdat` which contains the various GeoSurvey quadrat observations as well the colocated gridded measurements and their corresponding administrative boundaries from [**GADM**](https://gadm.org/data.html). You can look at the overall structure of this file with:
@@ -225,12 +220,11 @@ set.seed(1235813)
 wordcloud(gscon$Var1, freq = gscon$Freq, scale = c(4,0.1), random.order = T)
 ```
 
-
 ## Step 2: Spatial prediction using ensemble machine learning {#geosurvey_step2}
 
-We now turn to the prediction part of the workflow. Many data scientists appear to have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many favorite, new algorithms supports our philosophy that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuraccies. Our basic schema for this is shown in the Figure below:
+We now turn to the prediction part of the workflow. Many data scientists appear to have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many favorite, new algorithms supports our philosophy that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuraccies. Our basic schema for this is shown in the following Figure:
 
-```{r GS_workflow, echo=FALSE, fig.cap="Generalized GeoSurvey prediction workflow", out.width = '90%'}
+```{r GS_workflow, echo=FALSE, fig.cap="Generalized GeoSurvey prediction workflow", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/geosurvey_prediction_workflow.png")
 ```
 
