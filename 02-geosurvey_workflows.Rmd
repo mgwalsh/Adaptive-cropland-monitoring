@@ -10,7 +10,7 @@ Quantifying the geographical extent, location and spatial dynamics of cropland a
 
 [**GeoSurvey**](https://geosurvey.qed.ai/) is a platform for analyzing geospatial land cover observations. High resolution satellite images, mobile phone photography, and drone imagery can be sytematically labeled by either trained photo interpreters and/or by *"crowds"* of citizen scientists. When done with care, these observations result in large, well-structured, properly labeled, geospatial datasets that are suitable for machine learning and geostatistical predictions of land cover and in some instances for inferring land use. The detailed manual for conducting your own GeoSurveys is available at: [**GeoSurvey manual**](https://docs.google.com/document/d/1y-HYUSYpDVESPdmEcl3I2kuL0bwrT41wMiq0zE9uzOs/edit). The manual should definitely be consulted to obtain information about how GeoSurvey about how to carry out potentially high value. We shall not cover that in this chapter and assume that we already have GeoSurvey data and colocated spatial covariates in hand.
 
-The main reason for gathering GeoSurvey observations is is that this allows us to rapidly assess where in a particular country significant impacts of humans on ecosystem processess can be expected. We have frequently been able to provide highly accurate of where anthropic impacts are like to occur in a country, and in remote places that are often not reachable by car.
+The main reason for gathering GeoSurvey observations is is that these allow us to rapidly assess where in a particular country significant impacts of humans on ecosystem processess can be expected. We have frequently been able to provide highly accurate assessments and maps of where anthropic impacts are like to occur  in remote places that are often not reachable by car.
 
 This chapter provides an overview of proposed ensemble machine learning and statistical workflows, which we have used for mapping and interpreting GeoSurvey land cover observations from Digital Globe (Worlview etc) satellite images. We recognize that there are potentially many different techniques and algorithms that could be applied in this context. Hence, the workflows presented here are completely open for criticism and improvement. They could (and probably should) also be exposed and stress-tested in data science competitions e.g., at [**Kaggle**](https://www.kaggle.com/), given their potential importance for monitoring and managing terra incognita landscapes. 
 
@@ -48,19 +48,21 @@ There are already many good examples of GeoSurveys of different countries that a
 The following chunk loads all of the relevant data for Tanzania from its [**OSF repo**](https://osf.io/j8y3z/) and Dropbox:
  
 ```{r}
-dir.create("Results", showWarnings = F)
+dir.create("figures", showWarnings = F)
+dir.create("data", showWarnings = F)
+dir.create("results", showWarnings = F)
 
 # download GeoSurvey data from OSF or Dropbox
 # also see the corresponding sampling frame @ https://github.com/mgwalsh/Sampling/blob/master/TZ_GS_sample.R
-download("https://osf.io/9gndf?raw=1", "TZ_geos_2018.csv.zip", mode = "wb")
-unzip("TZ_geos_2018.csv.zip", overwrite = T)
-geos <- read.table("TZ_geos_2018.csv", header = T, sep = ",")
+download("https://osf.io/9gndf?raw=1", "./data/TZ_geos_2018.csv.zip", mode = "wb")
+unzip("./data/TZ_geos_2018.csv.zip", overwrite = T)
+geos <- read.table("./data/TZ_geos_2018.csv", header = T, sep = ",")
 geos$BIC <- as.factor(ifelse(geos$CP == "Y" & geos$BP == "Y", "Y", "N")) ## identifies croplands with buildings
 
 # download GADM-L3 shapefile (courtesy: http://www.gadm.org)
-download("https://www.dropbox.com/s/bhefsc8u120uqwp/TZA_adm3.zip?raw=1", "TZA_adm3.zip", mode = "wb")
-unzip("TZA_adm3.zip", overwrite = T)
-shape <- shapefile("TZA_adm3.shp")
+download("https://www.dropbox.com/s/bhefsc8u120uqwp/TZA_adm3.zip?raw=1", "./data/TZA_adm3.zip", mode = "wb")
+unzip("./data/TZA_adm3.zip", overwrite = T)
+shape <- shapefile("./data/TZA_adm3.shp")
 
 # download raster stack (note this is a big 1+ Gb download, which a take a while to download depending ...)
 # download("https://osf.io/ke5ya?raw=1", "TZ_250m_2019.zip", mode = "wb") ## OSF is persistent
@@ -193,7 +195,7 @@ Note that there are n = 16,219 (6.25 ha) quadrats (rows) and 69 variables (colum
 5. **bcount**, a count of all tagged buildings in a quadrat
 6. **ccount**, a grid count of the proportion of cropland area (n/16) in a quadrat
 
-BP, CP, and WP predictions are used to generate a Land Cover Classification (LCC) focused on anthropic parts of landscapes, which we use for survey post-stratification, small area estimation  of cropland area, building densities and development of ground-sampling plans (e.g, for infrastructure surveys, soil and cropping systems sampling plans that involve sending teams into the field).
+BP, CP, and WP predictions are used to generate a Land Cover Classification (LCC) focused on the anthropic parts of landscapes, which we use for survey post-stratification, small area estimation  of cropland area, building densities and development of ground-sampling plans (e.g, for infrastructure surveys, soil and cropping systems sampling plans that involve sending teams into the field).
 
 The following chunk writes the `gsdat` file and others out, which are subsequently used for various spatial predictions. Writing the relevant files out simply means that one does not have to run the data wrangling step repeatedly if the underlying data have not changed. It also produces simple Leaflet maps of sampling locations and/or tagged building coordinates (see below).
 
@@ -222,9 +224,21 @@ wordcloud(gscon$Var1, freq = gscon$Freq, scale = c(4,0.1), random.order = T)
 
 ## Step 2: Spatial prediction using ensemble machine learning {#geosurvey_step2}
 
-We now turn to the prediction part of the workflow. Many data scientists appear to have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many favorite, new algorithms supports our philosophy that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuraccies. Our basic schema for this is shown in the following Figure:
+We now turn to the prediction part of the workflow. Many data scientists appear to have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our philosophy that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuraccies. Our basic schema for this is shown in the following Figure:
 
 ```{r GS_workflow, echo=FALSE, fig.cap="Generalized GeoSurvey prediction workflow", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/geosurvey_prediction_workflow.png")
 ```
+
+The overall workflow shown in Fig. fig:\@ref(GS_workflow) is implemented in four main steps:
+
+1. Label vetting and quality control
+2. Model calibration and stacking
+3. Ensemble prediction using multiple machine-learning algorithms
+4. Reinforcement learning on prediction results from previous surveys.
+
+The quality control and subsequent computational steps are intended to ensure that the results obtained are reproducible and have high predictive accuracies suitable for reinforcement learning as well as for monitoring changes. They are also intended to set up a validation set The four steps are demonstrated by the code provided hereafter.
+
+### Label vetting and quality control {#label-vetting}
+
 
