@@ -1,22 +1,24 @@
 # GeoSurvey prediction workflows {#geosurvey}
 
-*Edited by: Markus Walsh, William Wu, Edwin Adkins, ... ?*
+*Edited by: Markus Walsh, William Wu, Jiehua Chen, ... ?*
 
-We gratefully acknowledge the team at [**QED**](https://qed.ai/), who built and maintain the GeoSurvey App
+We gratefully acknowledge the team at [**QED**](https://qed.ai/), who built, maintain and improve the GeoSurvey App.
+
+Dr. Alex Verlinden (195 - 2016) is gratefully acknowledged for his many contributions in developing GeoSurvey applications and training dozens of people in its use. 
 
 ## Introduction
 
-Quantifying the geographical extent, location and spatial dynamics of cropland areas, rural and urban settlements and woody vegetation cover provides essential land cover information for monitoring and managing human dominated (*"anthropic"*) landscapes and the associated socio-economic, health, environmental and ecological impacts. Large portions of Africa remain *"terra incognita"* in this context. The main reason for gathering GeoSurvey observations is is that these allow us to rapidly assess where in a particular country significant impacts of humans on ecosystem processes can be expected. We have frequently been able to provide highly accurate assessments and spatial predictions of where anthropic impacts are likely to occur in remote places that are not readily reachable by car.
+Quantifying the geographical extent, location and spatial dynamics of cropland areas, rural and urban settlements and woody vegetation cover provides essential land cover information for monitoring and managing human dominated (*"anthropic"*) landscapes and the associated socio-economic, health, environmental and ecological impacts. Large portions of Africa remain *"terra incognita"* in this context. The main reason for gathering GeoSurvey observations is is that these allow us to rapidly assess where in a particular country significant impacts of humans on ecosystem processes can be expected. We have frequently been able to provide highly accurate assessments and spatial predictions of where anthropic impacts are likely to occur in remote places that are not readily reachable by car or even on foot.
 
 [**GeoSurvey**](https://geosurvey.qed.ai/) is a platform for analyzing geospatial land cover observations. High resolution satellite images, mobile phone photography, and drone imagery can be systematically labeled by either trained photo interpreters and/or by *"crowds"* of citizen scientists. When done with care, these observations result in large, well-structured, properly labeled, geospatial data sets that are suitable for machine learning and geostatistical predictions of land cover and in some instances for predicting land use. The detailed manual for conducting your own GeoSurveys is available at: [**GeoSurvey manual**](https://docs.google.com/document/d/1y-HYUSYpDVESPdmEcl3I2kuL0bwrT41wMiq0zE9uzOs/edit). The manual should definitely be consulted to obtain information about how GeoSurvey about how to carry out potentially high value. We shall not cover that in this chapter and assume that we already have GeoSurvey data and collocated spatial covariates in hand.
 
 This chapter provides an overview of ensemble machine learning and statistical workflows, which we have used for mapping and interpreting GeoSurvey land cover observations from Digital Globe (Worlview etc) satellite images. We recognize that there are potentially many different techniques and algorithms that could be applied in this context. Hence, the workflows presented here are completely open for constructive criticism and improvement. They could (and probably should) also be exposed and stress-tested in data science competitions e.g., at [**Kaggle**](https://www.kaggle.com/), given their potential importance for monitoring and managing terra incognita landscapes.
 
-```{r GS_screenshot, echo=FALSE, fig.cap="Screenshot of the [**GeoSurvey App**](https://geosurvey.qed.ai/) in action", fig.align="center", out.width = '90%'}
+```{r GS_screenshot, echo=FALSE, fig.cap="Screenshot of the [**GeoSurvey App**](https://geosurvey.qed.ai/) in action over a quadrat in Rwanda", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/geosurvey_screenshot.png")
 ```
 
-The intent of the chapter is to provide some starter code for predictive mapping and statistical small area estimation [**SAE**]() of variables such as cropland area, building densities, settlement occurrences and woody vegetation cover that largely define *anthropic* land cover types in a given country or in any other large geographical region of interest. We use the most recent GeoSurvey data and gridded covariates from Tanzania to illustrate the key analysis steps. These include sequentially:  
+The intent of the chapter is to provide some starter code for predictive mapping and statistical small area estimation [**SAE**]() of variables such as cropland area, building densities, settlement occurrences and woody vegetation cover that largely define the *anthropic* land cover types in a given country or in any other large geographical region of interest. We use the most recent GeoSurvey data and gridded covariates from Tanzania to illustrate the approach and key data analysis steps. These include sequentially:  
 
 1. Data wrangling
 2. Spatial prediction using ensemble machine learning
@@ -29,7 +31,7 @@ In order to monitor changing landscapes the first three steps should be repeated
 
 Assembling analysis-ready dataframes is typically a major task that can take an inordinate amount of a data scientist's time and effort both inside and outside of the actual prediction workflows (e.g., for covariate image and GIS pre-processing and data vetting). Data providers are encouraged to provide *"clean"* datasets. While GeoSurvey does the *"clean bits"* pretty much automatically, in some instances the veracity of the observations, particularly from crowd-sourced data collections, should be thoroughly quality checked by GeoSurvey administrators. There is an example script for doing that at: [**Input screening**](https://github.com/mgwalsh/Geosurvey/blob/master/GS_input_screening.R).
 
-We will use the following R packages to assemble a dataframe for Tanzania, as an example of an overall data wrangling workflow:
+We will use the following R packages to assemble a dataframe for Tanzania, as an example of a typical data wrangling workflow:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -182,7 +184,7 @@ gsdat$observer <- sub("@.*", "", as.character(gsdat$observer)) ## shortens obser
 
 ### GeoSurvey dataframe 
 
-The main end product of all of this wrangling (\@ref(geosurvey_step1) is a dataframe called `gsdat` which contains the various GeoSurvey quadrat observations as well the colocated gridded measurements and their corresponding administrative boundaries from [**GADM**](https://gadm.org/data.html). You can look at the overall structure of this file with:
+The main end product of all of this wrangling (\@ref(geosurvey_step1) is a R dataframe called `gsdat` which contains the various GeoSurvey quadrat observations as well the colocated gridded measurements and their corresponding administrative boundaries from [**GADM**](https://gadm.org/data.html). You can look at the overall structure of this file with:
 
 ```{r}
 str(gsdat)
@@ -197,9 +199,13 @@ Note that there are n = 16,219 (6.25 ha) quadrats (rows) and 69 variables (colum
 5. **bcount**, a count of all tagged buildings in a quadrat
 6. **ccount**, a grid count of the proportion of cropland area (n/16) in a quadrat
 
-BP, CP, and WP predictions are used to generate a Land Cover Classification (LCC) focused on the anthropic parts of landscapes, which we use for survey post-stratification, small area estimation of cropland area, building densities and development of ground-sampling plans (e.g, for infrastructure surveys, soil and cropping systems sampling plans that involve sending teams into the field).
+BP, CP, and WP predictions are used to generate a Land Cover Classification (LCC) focused on the anthropic parts of landscapes, which we use for survey post-stratification, small area estimation of cropland area, building densities and development of ground-sampling plans e.g, for infrastructure surveys, soil and cropping systems and soil sampling plans that involve sending teams into the field. See the schema (Fig. \@ref(fig:L3_schema) below.
 
-The following chunk writes the `gsdat` file and others out, which are subsequently used for various spatial predictions. Writing the relevant files out simply means that one does not have to run the data wrangling step repeatedly if the underlying data have not changed. It also produces simple Leaflet maps of sampling locations and/or tagged building coordinates (see below).
+```{r L3_schema, echo=FALSE, fig.cap="Land Cover Classification (LCC) schema", fig.align="center", out.width = '80%'}
+knitr::include_graphics("figures/L3.png")
+```
+
+The following chunk writes the `gsdat` file and others out, which are subsequently used for the various spatial predictions. Writing the relevant files out simply means that one does not have to run the data wrangling step repeatedly if the underlying data have not changed. It also produces simple Leaflet maps of potential sampling locations and/or tagged building coordinates (see below).
 
 ```{r}
 write.csv(gsdat, "./results/TZ_gsdat_2018.csv", row.names = F)
@@ -215,7 +221,7 @@ w <- leaflet() %>%
 w ## plot widget 
 ```
 
-Individual GeoSurvey contributions are acknowledged via a simple wordcloud, which highlights the proportion of the quadrats that were completed by each GeoSurveyor. This also essentially provides the survey signature for label vetting and quality control purposes.
+Individual GeoSurvey contributions are acknowledged via a simple wordcloud, which highlights the proportion of the quadrats that were completed by each GeoSurveyor. This also essentially provides a survey's signature for label vetting and quality control purposes.
 
 ```{r}
 # GeoSurvey contributions -------------------------------------------------
@@ -232,18 +238,101 @@ We now turn to the prediction part of the workflow. Many data scientists appear 
 knitr::include_graphics("figures/geosurvey_prediction_workflow.png")
 ```
 
-The overall workflow shown in Fig. fig:\@ref(GS_workflow) is implemented in four main steps:
+The overall prediction workflow shown in Fig. fig:\@ref(GS_workflow) is implemented in four main steps:
 
 1. Label vetting and quality control
 2. Model calibration and stacking
 3. Ensemble prediction using multiple machine-learning algorithms
 4. Reinforcement learning on prediction results from previous surveys.
 
-The quality control and subsequent computational steps are intended to ensure that the results obtained are reproducible and have high predictive accuracies suitable for reinforcement learning as well as for monitoring changes. They are also intended to set up a validation set The four steps are demonstrated by the code chunks provided hereafter.
+The quality control and subsequent computational steps are intended to ensure that the results obtained are reproducible and have high predictive accuracies suitable for reinforcement learning as well as for monitoring changes. They are also intended to set up a validation set. The four steps are demonstrated by the code chunks provided hereafter.
 
 ### Label vetting and quality control {#label-vetting}
 
-The following is an example where we had commissioned piece work from a consulting agency in the Philippines to conduct a GeoSurvey of all of Africa (1 million point locations in the photosynthetically active portion of Africa). The survey involved simply tagging 1 km^2 pixels for both the presence/absence of buildings and croplands. This was one of the first surveys that we ran in 2015, and we were concerned with the accuracy of the resulting observations. The main reason for our concern was that the students who were employed to do this survey were not formally trained in air photo/satellite interpretations, but also because the survey was done as [**piece work**](https://en.wikipedia.org/wiki/Piece_work), in which people get paid based the number of observations that are produced. You can download the cleaned data for this survey at [**OSF**](https://osf.io/hmpw7/).
+The following is an example where we had commissioned [**Piece work**](https://en.wikipedia.org/wiki/Piece_work) from a consulting company to conduct a GeoSurvey of all of Africa (consisting of 1 million quadrat locations distributed over the photosynthetically active portion of Africa). The survey task involved tagging 1 km^2 pixels for both the presence/absence of buildings and/or croplands. This was one of the first crowd-sourcing surveys that we ran in 2015, and we were concerned with the accuracy of the resulting observations. 
+
+The main reason for our concerns were that the students who were employed to do this survey were not formally trained in air-photo and/or satellite interpretations, but also because the survey was done as *Piece work*, in which people get paid based the number of observations that they produce. The latter can result in people rushing through the observations and not paying adequate care to their accuracy. You can download the cleaned data for this survey at [**OSF repo**](https://osf.io/hmpw7/).
+
+We decided to systematically check a sub-sample of the observations of the survey in proportion to the number of observations that had been registered by the participants in this survey. The checks were done by 2 GeoSurvey admins (*"image interpretation experts"*) who were both proficient in satellite image interpretions. The 2 admins had +60 years of experience between them at the time (... we believe in employing the elderly :). Their associated data and code chunks are presented below. This initial chunk is the data download:
+
+```{r}
+# Data download -----------------------------------------------------------
+# Create a "Data" folder in your current working directory
+dir.create("1MGS_data", showWarnings=F)
+dat_dir <- "./1MGS_data"
+
+# 1MQ GeoSurvey
+download("https://www.dropbox.com/s/tnc1wwmi8a4h6b1/2015-01-20_18-00-02_248261.zip?raw=1", "./1MGS_data/2015-01-20_18-00-02_248261.zip", mode="wb")
+unzip("./1MGS_data/2015-01-20_18-00-02_248261.zip", exdir="./1MGS_data", junkpaths=T, overwrite=T)
+geosurvey_a1 <- read.csv(paste(dat_dir, "/6_1m-point-survey-a1.csv", sep=""), stringsAsFactors=F)
+geosurvey_a2 <- read.csv(paste(dat_dir, "/7_1m-point-survey-a2.csv", sep=""), stringsAsFactors=F)
+geosurvey_total <- rbind(geosurvey_a1[ ,1:6], geosurvey_a2[ ,1:6])
+
+# Validation dataset
+download("https://www.dropbox.com/s/pt86fr3ko379f8h/1MQ_validation_data.csv?dl=0", "./1MGS_data/1MQ_validation_data.csv", mode ="wb")
+geosv <- read.csv(paste(dat_dir, "/1MQ_validation_data.csv", sep=""), stringsAsFactors=F)
+geosv$User <- do.call("rbind", strsplit(geosv$User, split="@"))[,1]
+```
+
+This following chunk removes any coordinate duplicates, where those exist, by accident.
+
+```{r}
+# Remove coordinate duplicates --------------------------------------------
+dupindex <- which(duplicated(geosurvey_total[ ,2:3]))
+dupindex_rev <- which(duplicated(geosurvey_total[ ,2:3], fromLast=T))
+dupindex_total <- unique(c(dupindex, dupindex_rev))
+geos_nodups <- geosurvey_total[-dupindex, ]
+geos_nodups$User <- do.call("rbind", strsplit(geos_nodups$User, split="@"))[,1]
+```
+
+This is the main GeoSurveyor accuracy assessment chunck, which compares a statistical sample of what surveyors (*Users*) post, to what the *expert* assessments are. We also set some rules here, which state that if the level of agreement between *Users* and *experts* is less than 50% then the User's classifications are not included in the final dataset.
+
+```{r}
+# Geosurveyor (GS) accuracy assessment ------------------------------------
+# Cropland observations
+geov_crp <- geosv[, c(1:4, 6, 8)]
+# NA values in 1MQ are "Don't know", which should also be compared to expert answers to calculate accuracy rates
+geov_crp[,5] <- ifelse(is.na(geov_crp[,5]), "NA", geov_crp[,5])
+geov_crp[,6] <- ifelse(is.na(geov_crp[,6]), "NA", geov_crp[,6])
+
+# Cropland random effects model, GS vs expert
+CRPcn <- as.numeric(factor(geov_crp$CRPc))
+CRPn <- as.numeric(factor(geov_crp$CRP))
+CRP_diff <- ifelse(CRPcn - CRPn==0, 1, 0)
+geosv_narm <- geov_crp[!is.na(CRP_diff), ]
+CRP_diff <- na.omit(CRP_diff)
+CRP.glmer <- glmer(CRP_diff~1+(1|geosv_narm$User), family=binomial)
+display(CRP.glmer)
+
+# If a GS's estimated agreement rate is <50%, the data for that GS are removed from further analyses
+coef(CRP.glmer)
+nosample_CRP <- rownames(coef(CRP.glmer)[[1]])[coef(CRP.glmer)[[1]][,1]<0]
+crp_data <- geos_nodups
+crp_data$Cropland.present <- ifelse(crp_data$User%in%nosample_CRP|crp_data$Cropland.present=="Don't Know", NA, crp_data$Cropland.present)
+nrow(crp_data)
+
+# Building / rural settlement observations
+geov_hs <- geosv[, c(1:4, 5, 7)]
+# NA values in 1MQ are "Don't know", which should also be compared to expert answers to calculate accuracy rates
+geov_hs[,5] <- ifelse(is.na(geov_hs[,5]), "NA", geov_hs[,5])
+geov_hs[,6] <- ifelse(is.na(geov_hs[,6]), "NA", geov_hs[,6])
+
+# Building / rural settlement random effects model, GS vs expert
+HSPcn <- as.numeric(factor(geov_hs$HSPc))
+HSPn <- as.numeric(factor(geov_hs$HSP))
+HSP_diff <- ifelse(HSPcn - HSPn==0, 1, 0)
+geosv_narm <- geosv[!is.na(HSP_diff), ]
+HSP_diff <- na.omit(HSP_diff)
+HSP.glmer <- glmer(HSP_diff~1+(1|geosv_narm$User), family=binomial)
+display(HSP.glmer)
+
+# If a GS's estimated agreement rate is <50%, the data for that GS are removed from further analyses
+coef(HSP.glmer)
+nosample_HSP <- rownames(coef(HSP.glmer)[[1]])[coef(HSP.glmer)[[1]][,1]<0]
+hsp_data <- geos_nodups
+hsp_data[,5] <- ifelse(hsp_data$User%in%nosample_HSP|hsp_data[,5]=="Don't Know", NA, hsp_data[,5])
+nrow(hsp_data)
+```
 
 ### Model calibration and stacking {#calibration-and-stacking}
 
