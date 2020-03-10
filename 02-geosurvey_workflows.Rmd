@@ -4,13 +4,13 @@
 
 We gratefully acknowledge the team at [**QED**](https://qed.ai/), who built, maintain and improve the [**GeoSurvey**](https://geosurvey.qed.ai/) App.
 
-[**Dr. Alex Verlinden**](https://www.linkedin.com/in/alex-verlinden-1782a79/) (1956 - 2017) is gratefully acknowledged for his many contributions in developing GeoSurvey applications and for training dozens of people in its uses. 
+[**Dr. Alex Verlinden**](https://www.linkedin.com/in/alex-verlinden-1782a79/) (1956 - 2017) is gratefully acknowledged for his many contributions in developing GeoSurvey applications and for thoroughly training dozens of people in its use. 
 
-## Introduction
+## Introduction {#GS-intro}
 
 Quantifying the geographical extent, location and spatial dynamics of cropland areas, rural and urban settlements and woody vegetation cover provides essential land cover information for monitoring and managing human dominated (*"anthropic"*) landscapes and the associated socio-economic, health, environmental and ecological impacts. Large portions of Africa remain *"terra incognita"* in this context. The main reason for gathering GeoSurvey observations is is that these allow us to rapidly assess where in a particular country significant impacts of humans on ecosystem processes can be expected. We have frequently been able to provide highly accurate assessments and spatial predictions of where anthropic impacts are likely to occur in remote places that are not readily reachable by car or even on foot.
 
-[**GeoSurvey**](https://geosurvey.qed.ai/) is a platform for analyzing geospatial land cover observations. High resolution satellite images, mobile phone photography, and drone imagery can be systematically labeled by either trained photo interpreters and/or by *"crowds"* of [**citizen scientists**](https://en.wikipedia.org/wiki/Citizen_science). When done with care, these observations result in large, well-structured, properly labeled, geospatial data sets that are suitable for machine learning and geostatistical predictions of land cover and in some instances for predicting land use. The detailed manual for conducting your own GeoSurveys is available at: [**GeoSurvey manual**](https://docs.google.com/document/d/1y-HYUSYpDVESPdmEcl3I2kuL0bwrT41wMiq0zE9uzOs/edit). The manual should definitely be consulted to obtain information about how GeoSurvey can be used to carry out potentially high value surveys. There is also a great slide deck available [**here**](https://docs.google.com/presentation/d/1vBQ-By8LLvyJQzMBFaqUuRwFFeL7Y8QXUtBifx-3jn4/edit#slide=id.g14d47405c8_0_0), which illustrates different land cover and use labeling. We shall not cover these issues in this chapter and assume that we already have well-designed GeoSurvey data and collocated spatial covariates in hand.
+[**GeoSurvey**](https://geosurvey.qed.ai/) is a platform for analyzing geospatial land cover observations. High resolution satellite images, mobile phone photography, and drone imagery can be systematically labeled by either trained photo interpreters and/or by *"crowds"* of [**citizen scientists**](https://en.wikipedia.org/wiki/Citizen_science). When done with care, these observations result in large, well-structured, properly labeled, geospatial data sets that are suitable for machine learning and geostatistical predictions of land cover and in some instances for predicting land use. The detailed manual for conducting your own GeoSurveys is available at: [**GeoSurvey manual**](https://docs.google.com/document/d/1y-HYUSYpDVESPdmEcl3I2kuL0bwrT41wMiq0zE9uzOs/edit). The manual should definitely be consulted to obtain information about how GeoSurvey can be used to carry out potentially high value surveys. There is also a great slide deck available [**here**](https://docs.google.com/presentation/d/1vBQ-By8LLvyJQzMBFaqUuRwFFeL7Y8QXUtBifx-3jn4/edit#slide=id.g14d47405c8_0_0), which illustrates different land cover and use labeling approaches. We shall not cover these issues in this chapter and assume that we already have well-designed GeoSurvey data and collocated spatial covariates in hand.
 
 ```{r GS_screenshot, echo=FALSE, fig.cap="Screenshot of the [**GeoSurvey App**](https://geosurvey.qed.ai/) in action over a quadrat in Rwanda", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/geosurvey_screenshot.png")
@@ -232,7 +232,7 @@ wordcloud(gscon$Var1, freq = gscon$Freq, scale = c(4,0.1), random.order = T)
 
 ## Step 2: Spatial prediction using ensemble machine learning {#geosurvey_step2}
 
-We now turn to the prediction part of the workflow. Many data scientists appear to have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuraccies. Our basic schema for this is shown in the following Figure:
+We now turn to the prediction part of the workflow. Many data scientists have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuraccies. Our schema for this is shown in the following Figure:
 
 ```{r GS_workflow, echo=FALSE, fig.cap="Generalized GeoSurvey prediction workflow", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/geosurvey_prediction_workflow.png")
@@ -249,13 +249,16 @@ The quality control and subsequent computational steps are intended to ensure th
 
 ### Label vetting and quality control {#label-vetting}
 
-The following is an example where we had commissioned [**Piece work**](https://en.wikipedia.org/wiki/Piece_work) from a consulting company to conduct a GeoSurvey of all of Africa (consisting of 1 million quadrat locations distributed over the photosynthetically active portion of Africa). The survey task involved tagging 1 km^2 pixels for both the presence/absence of buildings and/or croplands. This was one of the first crowd-sourcing surveys that we ran in 2015, and we were concerned with the accuracy of the resulting observations. 
+The following is an example where we had commissioned [**Piece work**](https://en.wikipedia.org/wiki/Piece_work) from a consulting company to conduct a GeoSurvey of all of Africa (consisting of 1 million quadrat locations distributed over the photosynthetically active portion of Africa). The survey task involved tagging 1 km^2 pixels for both the presence/absence of buildings and croplands. This was one of the first crowd-sourcing surveys that we ran in 2015, and we were concerned about the accuracy of the resulting observations.
 
-The main reason for our concerns were that the students who were employed to do this survey were not formally trained in air-photo and/or satellite interpretations, but also because the survey was done as *Piece work*, in which people get paid based the number of observations that they produce. The latter can result in people rushing through the observations and not paying adequate care to their accuracy. You can download the cleaned data for this survey at [**OSF repo**](https://osf.io/hmpw7/).
+The main reason for our concern was that the students who were employed to do this survey were not formally trained in air-photo and/or satellite interpretations, but also because the survey was done as *Piece work*, in which people get paid based the number of observations that they produce. The latter can result in people rushing through the observations and not paying adequate attention to their accuracy. You can download the cleaned data for this survey at its [**OSF repo**](https://osf.io/hmpw7/).
 
-We decided to systematically check a sub-sample of the observations of the survey in proportion to the number of observations that had been registered by the participants in this survey. The checks were done by 2 GeoSurvey admins (*"image interpretation experts"*) who were both proficient in satellite image interpretions. The 2 admins had +60 years of experience between them at the time (... we believe in employing the elderly :). Their associated data and code chunks are presented below. This initial chunk is the data download:
+We decided to systematically check a sub-sample of the observations of the survey in proportion to the number of observations that had been registered by the participants in this survey. The checks were done by 2 GeoSurvey admins (*"image interpretation experts"*) who were both proficient in satellite image interpretions. The 2 admins had +60 years of experience between them at the time (... we believe in employing the elderly :). Their associated data and code chunks are presented below. The whole script can be downloaded at this [**Github repo**](). To document this more thoroughly, this initial chunk is the data download:
 
 ```{r}
+library(downloader)
+library(arm)
+
 # Data download -----------------------------------------------------------
 # Create a "Data" folder in your current working directory
 dir.create("1MGS_data", showWarnings=F)
@@ -269,12 +272,12 @@ geosurvey_a2 <- read.csv(paste(dat_dir, "/7_1m-point-survey-a2.csv", sep=""), st
 geosurvey_total <- rbind(geosurvey_a1[ ,1:6], geosurvey_a2[ ,1:6])
 
 # Validation dataset
-download("https://www.dropbox.com/s/pt86fr3ko379f8h/1MQ_validation_data.csv?dl=0", "./1MGS_data/1MQ_validation_data.csv", mode ="wb")
+download("https://www.dropbox.com/s/pt86fr3ko379f8h/1MQ_validation_data.csv?raw=1", "./1MGS_data/1MQ_validation_data.csv", mode ="wb")
 geosv <- read.csv(paste(dat_dir, "/1MQ_validation_data.csv", sep=""), stringsAsFactors=F)
 geosv$User <- do.call("rbind", strsplit(geosv$User, split="@"))[,1]
 ```
 
-This following chunk removes any coordinate duplicates, where those exist, by accident.
+This following chunk removes any coordinate duplicates, where those exist ... by *"accident"*.
 
 ```{r}
 # Remove coordinate duplicates --------------------------------------------
@@ -285,7 +288,7 @@ geos_nodups <- geosurvey_total[-dupindex, ]
 geos_nodups$User <- do.call("rbind", strsplit(geos_nodups$User, split="@"))[,1]
 ```
 
-This is the main GeoSurveyor accuracy assessment chunck, which compares a statistical sample of what surveyors (*Users*) post, to what the *expert* assessments are. We also set some rules here, which state that if the level of agreement between *Users* and *experts* is less than 50% then the User's classifications are not included in the final dataset.
+The following is the main GeoSurveyor accuracy assessment chunck, which compares a statistical sample of what Geosurveyors (*users*) post, to what the *expert* assessments are. We also set some rules here, which state that if the level of agreement between *users* and *experts* is less than 50% then the user's classifications are not included in the final dataset.
 
 ```{r}
 # Geosurveyor (GS) accuracy assessment ------------------------------------
