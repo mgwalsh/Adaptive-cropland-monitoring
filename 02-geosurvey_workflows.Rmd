@@ -359,6 +359,8 @@ suppressPackageStartupMessages({
 })
 ```
 
+If you've run the previous code chunks, the data should be in memory and can be accessed with the following.
+
 ```{r}
 # Data setup --------------------------------------------------------------
 rm(list=setdiff(ls(), c("gsdat","grids","glist"))) ## scrub extraneous objects in memory
@@ -381,6 +383,8 @@ gf_cal <- gs_cal[,19:70]
 ```
 
 
+
+```{r}
 # Central place theory model <glm> -----------------------------------------
 # select central place covariates
 gf_cpv <- gs_cal[,28:39]
@@ -409,6 +413,7 @@ gl1.pred <- predict(grids, gl1, type = "prob") ## spatial predictions
 
 stopCluster(mc)
 saveRDS(gl1, "./Results/gl1.rds")
+```
 
 # GLM with all covariates -------------------------------------------------
 # start doParallel to parallelize model fitting
