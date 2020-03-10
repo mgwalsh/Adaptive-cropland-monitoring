@@ -4,7 +4,7 @@
 
 We gratefully acknowledge the team at [**QED**](https://qed.ai/), who built, maintain and continuously improve the [**GeoSurvey**](https://geosurvey.qed.ai/) App.
 
-[**Dr. Alex Verlinden**](https://www.linkedin.com/in/alex-verlinden-1782a79/) (1956 - 2017) is gratefully acknowledged for his many contributions in developing GeoSurvey applications and for thoroughly training dozens of people in its use. 
+[**Dr. Alex Verlinden**](https://www.linkedin.com/in/alex-verlinden-1782a79/) (1956 - 2017) is gratefully acknowledged for his many contributions in developing GeoSurvey applications as well as for thoroughly training dozens of people in their uses. 
 
 ## Introduction {#GS-intro}
 
