@@ -18,7 +18,7 @@ knitr::include_graphics("figures/geosurvey_screenshot.png")
 
 This chapter provides an overview of ensemble machine learning and statistical workflows, which we have used for mapping and interpreting GeoSurvey land cover observations from Digital Globe (Worlview etc) satellite images. We recognize that there are potentially many different techniques and algorithms that could be applied in this context. Hence, the workflows presented here are completely open for constructive criticism and improvement. They could (and probably should) also be exposed and stress-tested in data science competitions e.g., at [**Kaggle**](https://www.kaggle.com/), given their potential importance for monitoring and managing terra incognita landscapes.
 
-The intent of the chapter is to provide starter code for predictive mapping and statistical small area estimation [**SAE**](https://www.census.gov/srd/csrm/SmallArea.html) of variables such as cropland area, building densities, settlement occurrences and woody vegetation cover that largely define the *anthropic* land cover types in a given country or in any other large geographical region of interest. We use the most recent GeoSurvey data and gridded covariates from Tanzania to illustrate the general approach and the key data analysis steps. These include sequentially:  
+The intent of the chapter is to describe starter code for predictive mapping and statistical small area estimation [**SAE**](https://www.census.gov/srd/csrm/SmallArea.html) of variables such as cropland area, building densities, settlement occurrences and woody vegetation cover that largely define the *anthropic* land cover types in a given country or in any other large geographical region of interest. We use the most recent GeoSurvey data and gridded covariates from Tanzania to illustrate the general approach and the key data analysis steps. These include sequentially:  
 
 1. Data wrangling
 2. Spatial prediction using ensemble machine learning
@@ -29,7 +29,7 @@ In order to monitor changing landscapes the first three steps should be repeated
 
 ## Step 1: Data wrangling
 
-Assembling analysis-ready dataframes is typically a major task that can take an inordinate amount of a data scientist's time and effort both inside and outside of the actual prediction workflows (e.g., for covariate image and GIS pre-processing and data vetting). Data providers are encouraged to provide *"clean"* datasets. While GeoSurvey does the *"clean bits"* pretty much automatically, in some instances the veracity of the observations, particularly from crowd-sourced data collections, should be thoroughly quality checked by GeoSurvey administrators. There is an example script for doing that at: [**Input screening**](https://github.com/mgwalsh/Geosurvey/blob/master/GS_input_screening.R), also see .
+Assembling analysis-ready dataframes is typically a major task that can take an inordinate amount of a data scientist's time and effort both inside and outside of the actual prediction workflows (e.g., for covariate image and GIS pre-processing and data vetting). Data providers are usually encouraged to provide *"clean"* datasets. While GeoSurvey does the *"clean bits"* pretty much automatically, in some instances the veracity of the observations, particularly from crowd-sourced data collections, should be thoroughly quality checked by GeoSurvey administrators. There is an example script for doing that at: [**Input screening**](https://github.com/mgwalsh/Geosurvey/blob/master/GS_input_screening.R), also see .
 
 We will use the following R packages to assemble a dataframe for Tanzania as an example of a typical data wrangling workflow:
 
@@ -47,7 +47,7 @@ suppressPackageStartupMessages({
 
 ### Load all the data locally {#local-load}
 
-There are already many good examples of GeoSurveys of different countries that are available. For Africa, exemplar, *"tidied-up"* data are publicly available on the associated [**Open Science Framework**](https://osf.io/vxc97/) GeoSurvey repository, which also mirrors all of the associated data assembly and prediction code at [**Github**](https://github.com/mgwalsh/Cropland-Atlas). The following chunk loads all of the relevant data for Tanzania from its [**OSF repo**](https://osf.io/j8y3z/) and Dropbox:
+There are already many good examples of GeoSurveys of different countries that are available. For Africa, exemplar, *"tidied-up"* data are publicly available on the associated [**Open Science Framework**](https://osf.io/vxc97/) GeoSurvey repository, which also mirrors all of the associated data assembly and prediction code at [**Github**](https://github.com/mgwalsh/Cropland-Atlas). The following chunk loads all of the relevant data for Tanzania from its [**OSF repo**](https://osf.io/j8y3z/) and on Dropbox.
  
 ```{r}
 dir.create("figures", showWarnings = F)
@@ -109,7 +109,7 @@ People ask what are all the spatial covariates that are used in the various pred
     
 The full current listing of the Tanzania grids that we are experimenting with is available in one of the [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other GIS which could be used for that purpose.
 
-```{r Spatial_covariates, echo=FALSE, fig.cap="Examples of open-source spatial covariates used in GeoSurvey predictions", fig.align="center", out.width = '90%'}
+```{r Spatial_covariates, echo=FALSE, fig.cap="Examples of open-source spatial covariates used for making GeoSurvey predictions", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/spatial_covariate_examples.png")
 ```
   
