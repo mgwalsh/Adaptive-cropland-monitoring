@@ -107,7 +107,7 @@ People ask what are all the spatial covariates that are used in the various pred
     - from [**Planet Labs**](https://www.planet.com/)
     - from [**MAXAR**](https://www.digitalglobe.com/)
     
-The full current listing of the Tanzania grids that we are experimenting with is available in one of the [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other GIS which could be used for that purpose.
+The full current listing of the Tanzania grids that we are experimenting with is available in one of the [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other GIS options which could be used for that purpose.
 
 ```{r Spatial_covariates, echo=FALSE, fig.cap="Examples of open-source spatial covariates used for making GeoSurvey predictions", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/spatial_covariate_examples.png")
@@ -223,7 +223,7 @@ w <- leaflet() %>%
 w ## plot widget 
 ```
 
-Individual GeoSurvey contributions are acknowledged via a simple wordcloud, which highlights the proportion of the quadrats that were completed by each GeoSurveyor. This also essentially provides a survey's signature for label vetting and quality control purposes.
+Individual GeoSurvey contributions are acknowledged via a wordcloud, which highlights the proportion of the quadrats that were completed by each GeoSurveyor. This also essentially provides a survey's signature for label vetting and quality control purposes.
 
 ```{r}
 # GeoSurvey contributions -------------------------------------------------
@@ -234,7 +234,7 @@ wordcloud(gscon$Var1, freq = gscon$Freq, scale = c(4,0.1), random.order = T)
 
 ## Step 2: Spatial prediction using ensemble machine learning {#geosurvey_step2}
 
-We now turn to the prediction part of the workflow. Many data scientists have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuraccies. Our schema for this is shown in the following Figure:
+We now turn to the prediction part of the workflow. Many data scientists have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuraccies. Our schema for this is shown in Fig. \@ref(fig:GS_workflow).
 
 ```{r GS_workflow, echo=FALSE, fig.cap="Generalized GeoSurvey prediction workflow", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/geosurvey_prediction_workflow.png")
@@ -255,7 +255,7 @@ The following is an example where we had commissioned [**Piece work**](https://e
 
 The main reason for our concern was that the students who were employed to do this survey were not formally trained in air-photo and/or satellite interpretations, but also because the survey was done as *Piece work*, in which people get paid based the number of observations that they produce. The latter can result in people rushing through the observations and not paying adequate attention to their accuracy. You can download the cleaned data for this survey at its [**OSF repo**](https://osf.io/hmpw7/).
 
-We decided to systematically check a sub-sample of the observations of the survey in proportion to the number of observations that had been registered by the participants in this survey. The checks were done by 2 GeoSurvey admins (*"image interpretation experts"*) who were both proficient in satellite image interpretions. The 2 admins had +60 years of experience between them at the time (... we believe in employing the elderly :). Their associated data and code chunks are presented below. The whole script can be downloaded at this [**Github repo**](). To document this more thoroughly, this initial chunk is the data download:
+We decided to systematically check a sub-sample of the observations of the survey in proportion to the number of observations that had been registered by the participants in this survey. The checks were done by 2 GeoSurvey admins (*"image interpretation experts"*) who were both proficient in satellite image interpretions. The 2 admins had +60 years of experience between them at the time (... we believe in employing the elderly :). Their associated data and code chunks are presented below. The whole script can be forked from this [**Github repo**](). To document this more thoroughly, this initial chunk is the data download.
 
 ```{r}
 library(downloader)
@@ -279,7 +279,7 @@ geosv <- read.csv(paste(dat_dir, "/1MQ_validation_data.csv", sep=""), stringsAsF
 geosv$User <- do.call("rbind", strsplit(geosv$User, split="@"))[,1]
 ```
 
-This following chunk removes any coordinate duplicates, where those exist ... by *"accident"*.
+This following chunk removes any coordinate duplicates, where those exist ... by *"accident"* or *"intent"*.
 
 ```{r}
 # Remove coordinate duplicates --------------------------------------------
@@ -290,7 +290,7 @@ geos_nodups <- geosurvey_total[-dupindex, ]
 geos_nodups$User <- do.call("rbind", strsplit(geos_nodups$User, split="@"))[,1]
 ```
 
-The following is the main GeoSurveyor accuracy assessment chunk, which compares a statistical sample of what Geosurveyors (*users*) post, to what the corresponding *expert* assessments are. We also set some rules here, which state that if the level of agreement between *users* and *experts* is less than 50% then the user's classifications are not included in the final dataset. In practice we now monitor assessments by GeoSurveyors from within GeoSurvey itself in near-real-time. So this chunk is a bit of an aside, but it demostrates how labeling might be controlled and adjusted statistically.
+The following is the main GeoSurveyor accuracy assessment chunk, which compares a statistical sample of what Geosurveyors (*users*) post to what the corresponding *expert* assessments are. We also set some rules here, which state that if the level of agreement between *users* and *experts* is less than 50% then the user's classifications are not included in the final dataset. In practice, we now monitor assessments by GeoSurveyors from within GeoSurvey itself in near-real-time. So the following chunk is a bit of an aside, but it does demostrate how labeling might be controlled and adjusted statistically.
 
 ```{r}
 # Geosurveyor (GS) accuracy assessment ------------------------------------
@@ -310,7 +310,7 @@ CRP.glmer <- glmer(CRP_diff~1+(1|geosv_narm$User), family=binomial)
 display(CRP.glmer)
 ```
 
-This chunk then just identifies users whose agreement rates are in <50% agreement with the experts and dumps their data.
+This chunk then just identifies users whose agreement rates are in <50% agreement with the experts and removes their data from further analyses.
 
 ```{r}
 # If a GS's estimated agreement rate is <50%, the data for that GS are removed from further analyses
@@ -320,13 +320,13 @@ crp_data <- geos_nodups
 crp_data$Cropland.present <- ifelse(crp_data$User%in%nosample_CRP|crp_data$Cropland.present=="Don't Know", NA, crp_data$Cropland.present)
 nrow(crp_data)
 
-# Building / rural settlement observations
+# Settlement observations
 geov_hs <- geosv[, c(1:4, 5, 7)]
 # NA values in 1MQ are "Don't know", which should also be compared to expert answers to calculate accuracy rates
 geov_hs[,5] <- ifelse(is.na(geov_hs[,5]), "NA", geov_hs[,5])
 geov_hs[,6] <- ifelse(is.na(geov_hs[,6]), "NA", geov_hs[,6])
 
-# Building / rural settlement random effects model, GS vs expert
+# Settlement random effects model, GS vs expert
 HSPcn <- as.numeric(factor(geov_hs$HSPc))
 HSPn <- as.numeric(factor(geov_hs$HSP))
 HSP_diff <- ifelse(HSPcn - HSPn==0, 1, 0)
@@ -359,19 +359,29 @@ suppressPackageStartupMessages({
 })
 ```
 
-If you've run the previous code chunks, the data should be in memory and can be accessed with the following.
+If you've run the previous code chunks, the data should be in memory and can be accessed with the following. Alternatively, you can also download the most recent `gsdat` file from its [**OSF repo**]() to your working directory.
 
 ```{r}
 # Data setup --------------------------------------------------------------
 rm(list=setdiff(ls(), c("gsdat","grids","glist"))) ## scrub extraneous objects in memory
 # gsdat <- gsdat[complete.cases(gsdat[ ,c(17:49)]),] ## removes incomplete cases
+```
 
+We then split the `gsdat` file into a 80:20% training (calibration), testing (validation) dataframes. As the names imply the calibration data are used for calibrating the different models; whereas the independent validation data are subsequently used to validate the predictions on previously unseen data. This ensures that we can obtain unbiased of the accurracies of our predictions. It is also intended to guard against model [**Overfitting**](https://en.wikipedia.org/wiki/Overfitting). Fig. \@ref(fig:training_validation) illustrates the relevant steps.
+
+```{r training_validation, echo=FALSE, fig.cap="Model training validation steps", fig.align="center", out.width = '90%'}
+knitr::include_graphics("figures/training_validation.png")
+```
+
+The corresponding R code using the `caret` package is:
+
+```{r}
 # set calibration/validation set randomization seed
 seed <- 12358
 set.seed(seed)
 
 # split data into calibration and validation sets
-gsIndex <- createDataPartition(gsdat$CP, p = 4/5, list = F, times = 1)
+gsIndex <- createDataPartition(gsdat$BP, p = 4/5, list = F, times = 1)
 gs_cal <- gsdat[ gsIndex,]
 gs_val <- gsdat[-gsIndex,]
 
@@ -382,7 +392,7 @@ cp_cal <- gs_cal$CP
 gf_cal <- gs_cal[,19:70]
 ```
 
-
+We utilize the `<caret>` package to calibrate various models. This first calibration chunk in the script demonstrates the basic `caret` syntax using only a subset of the spatial covariates in a generalized linear model. We refer to this as a [**Central Place Theory Model**](), in which 
 
 ```{r}
 # Central place theory model <glm> -----------------------------------------
