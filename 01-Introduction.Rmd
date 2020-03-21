@@ -16,13 +16,13 @@ Current problems in all human dominated landscapes and ecosystems include: stagn
 
 The current developed country agricultural paradigm is to manage agriculturalist productivity and production is based on perceived productivity/production gaps. The main idea is that if and when the perceived production gaps are large relative to what is economically desired, fixes like input subsidies, genomic technologies and agronomic management recommendations will be implemented to remedy/close those perceived gaps. The basic dynamics of this type of thinking are shown in (Fig. \@ref(fig:current_balancing_approach)).
 
-```{r current_balancing_approach, echo=FALSE, fig.align="center", fig.cap="Current paradigm for yield/production fix dynamics.", out.width = '60%', }
+```{r current_balancing_approach, echo=FALSE, fig.align="center", fig.cap="Current paradigm for yield/production fix dynamics.", out.width = '80%', }
 knitr::include_graphics("figures/current_balancing_loop.png")
 ```
 
 While this sort of strategy is not a completely terrible idea that has served agriculture well under many circumstances, there are always the (potentially) long-term, unintended side-effects that should be considered and weighed appropriately. In medical practice considering long-term side-effects is now standard practice, but in natural resource management it is still quite rare for land managers to consider and plan for long-term side effects i.e., those beyond their own lifetimes. The FTF dynamics, which may ensue are shown in (Fig. fig:\@ref(FTF))
 
-```{r FTF, echo=FALSE, fig.align="center", fig.cap="Managing production gaps with potentially counter productive side-effects.", out.width = '60%'}
+```{r FTF, echo=FALSE, fig.align="center", fig.cap="Managing production gaps with potentially counter productive side-effects.", out.width = '80%'}
 knitr::include_graphics("figures/FTF_loop.png")
 ```
 
@@ -43,7 +43,13 @@ Adaptive assessment (AA) “tries to define what is known and what is not known 
 
 ## What this book is about {#about}
 
-This book is about the processes for producing and using (useful) data, information and algorithms for adaptive management via adaptive assessment workflows. We now have many new tools, including high-resolution satellite observations, telecom-based data collection and transmission tools and low cost laboratory and data analysis techniques, which we did not have available 10 years ago. The book provides introductions to the new assessment techniques that use some of those technologies. In most of the ensuing chapters real, generally live data sets from Africa are used to demonstrate how these may be used for adaptive assessment, monitoring and management in real landscapes. We think of this like a technical guide to building a house, from site preparation to laying the foundations to putting in the interior finishing.
+This book is about the processes for producing and using (useful) data, information and algorithms for adaptive management via adaptive assessment workflows. We now have many new tools, including high-resolution satellite observations, telecom-based data collection and transmission tools and low cost laboratory and data analysis techniques, which we did not have available 10 years ago. The book provides introductions to the new assessment techniques, which use those new technologies. 
 
-We also adhere to what we believe to be completely *"Findable-Accessible-Interoperable-Reuseable"* [**FAIR**](https://www.go-fair.org/fair-principles/) data and code principles, which are rapidly becoming an international standard, which we support enthusiastically. Throughout the book links to other live examples of data and code are provided. All of the associated workflows are implemented and referenced in [**R**](https://www.r-project.org/), and we gratefully acknowledge the R and [**RStudio**](https://rstudio.com/) professionals and user communities for doing all of the hard work that makes our lives and teaching efforts so much more possible.
+```{r monitoring_workflow, echo=FALSE, fig.align="center", fig.cap="The six main steps in adaptive cropland monitoring.", out.width = '80%'}
+knitr::include_graphics("figures/Cropland_monitoring_workflow.png")
+```
+
+In the ensuing chapters real, generally live data sets from Africa are used to demonstrate how these may be used for adaptive assessment, monitoring and management in real landscapes. You can think of this book like a technical guide to building a house, starting with site preparation to eventually putting in the interior finishings and then maintaining it. The chapters follow the six steps shown in Fig. fig:\@ref(monitoring_workflow) and describe the data and algoritms, which we have found useful in that context.
+
+We also adhere to what we believe to be completely *"Findable-Accessible-Interoperable-Reuseable"* [**FAIR**](https://www.go-fair.org/fair-principles/) data and code principles, which are rapidly becoming an international standard, which we support enthusiastically. Throughout the book links to live examples of data and code are provided. All of the associated workflows are implemented and referenced in [**R**](https://www.r-project.org/), and we gratefully acknowledge the R and [**RStudio**](https://rstudio.com/) professionals and user communities for doing all of the hard work that makes our lives and teaching efforts so much more possible.
 
