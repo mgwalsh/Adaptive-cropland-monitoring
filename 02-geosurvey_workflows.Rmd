@@ -16,7 +16,7 @@ Quantifying the geographical extent, location and spatial dynamics of cropland a
 knitr::include_graphics("figures/geosurvey_screenshot.png")
 ```
 
-This chapter provides an overview of ensemble machine learning and statistical workflows, which we have used for mapping and interpreting GeoSurvey land cover observations from Digital Globe (Worlview etc) satellite images. We recognize that there are potentially many different techniques and algorithms that could be applied in this context. Hence, the workflows presented here are completely open for constructive criticism and improvement. They could (and probably should) also be exposed and stress-tested in data science competitions e.g., at [**Kaggle**](https://www.kaggle.com/), given their potential importance for monitoring and managing terra incognita landscapes.
+This chapter provides an overview of ensemble machine learning and statistical workflows, which we have used for mapping and interpreting GeoSurvey land cover observations from Digital Globe (Worldview etc) satellite images. We recognize that there are potentially many different techniques and algorithms that could be applied in this context. Hence, the workflows presented here are completely open for constructive criticism and improvement. They could (and probably should) also be exposed and stress-tested in data science competitions e.g., at [**Kaggle**](https://www.kaggle.com/), given their potential importance for monitoring and managing terra incognita landscapes.
 
 The intent of the chapter is to describe starter code for predictive mapping and statistical small area estimation [**SAE**](https://www.census.gov/srd/csrm/SmallArea.html) of variables such as cropland area, building densities, settlement occurrences and woody vegetation cover that largely define the *anthropic* land cover types in a given country or in any other large geographical region of interest. We use the most recent GeoSurvey data and gridded covariates from Tanzania to illustrate the general approach and the key data analysis steps. These include sequentially:  
 
@@ -107,7 +107,7 @@ People ask what are all the spatial covariates that are used in the various pred
     - from [**Planet Labs**](https://www.planet.com/)
     - from [**MAXAR**](https://www.digitalglobe.com/)
     
-The current listing of the Tanzania grids that we are experimenting with is available in one of the [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We tend to use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other GIS options which could be used for that purpose.
+The current listing of the Tanzania grids that we are experimenting with is available in one of our [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We tend to use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other GIS options which could also be used for that purpose.
 
 ```{r Spatial_covariates, echo=FALSE, fig.cap="Examples of open-source spatial covariates used for making GeoSurvey predictions", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/spatial_covariate_examples.png")
@@ -196,7 +196,7 @@ Note that there are n = 16,219 (6.25 ha) quadrats (rows) and 69 variables (colum
 
 1. **BP**, the observed presence/absence of buildings in a quadrat
 2. **CP**, the observed presence/absence of croplands in a quadrat
-3. **WP**, the observed presence/absence of woody vegetation cover > 60% in a quadrat
+3. **WP**, the observed presence/absence of woody vegetation cover >60% in a quadrat
 4. **rice**, the presence/absence of paddy rice in a quadrat
 5. **bcount**, a count of all tagged buildings in a quadrat
 6. **ccount**, a grid count of the proportion of cropland area (n/16) in a quadrat
@@ -290,7 +290,7 @@ geos_nodups <- geosurvey_total[-dupindex, ]
 geos_nodups$User <- do.call("rbind", strsplit(geos_nodups$User, split="@"))[,1]
 ```
 
-The main GeoSurveyor accuracy assessment chunk compares a statistical sample of what Geosurveyors (*users*) post to what the corresponding *expert* assessments are. We also set some rules here, which state that if the level of agreement between *users* and *experts* is less than 50% then the user's classifications are not included in the final dataset.
+The main GeoSurveyor accuracy assessment chunk compares a statistical sample of what Geosurveyors (*users*) posted to what the corresponding *expert* assessments are. We also set some rules here, which state that if the level of agreement between *users* and *experts* is less than 50% then the user's classifications are not included in the final dataset.
 
 ```{r}
 # Geosurveyor (GS) accuracy assessment ------------------------------------
@@ -347,7 +347,7 @@ In practice, we now monitor GeoSurveyor observations from within GeoSurvey itsel
 
 ### Model calibration and stacking {#calibration-and-stacking}
 
-To start training models, you will need the following packages installed.
+This section covers the code needed for model calibrations, stacking and validation procedures. To start training models, you will need the following packages installed.
 
 ```{r}
 suppressPackageStartupMessages({
@@ -590,6 +590,7 @@ saveRDS(st, "./Results/st.rds")
 ```
 
 
+
 ```{r}
 # Receiver-operator characteristics ---------------------------------------
 cp_pre <- predict(st, gf_val, type="prob")
@@ -634,3 +635,4 @@ w ## plot widget
 saveWidget(w, 'TZ_CP_2018.html', selfcontained = T) ## save html ... change feature names here
 ```
 
+### Small Area Estimates (SAE) {#sae}
