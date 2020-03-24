@@ -345,7 +345,7 @@ nrow(hsp_data)
 
 In practice, we now monitor GeoSurveyor observations from within GeoSurvey itself in near-real-time. So the previous section is a bit of an aside. However, it does demostrate how labeling might be controlled and adjusted statistically with a simple generalized linear [**Mixed-effects model**](https://en.wikipedia.org/wiki/Mixed_model).
 
-### Model calibration and stacking {#calibration-and-stacking}
+### Model calibration {#calibration}
 
 This section covers the code needed for model calibrations, stacking and validation procedures. To start training models, you will need to have the following R-packages installed.
 
@@ -373,7 +373,7 @@ rm(list=setdiff(ls(), c("gsdat","grids","glist"))) ## scrub extraneous objects i
 
 Alternatively, you can also download the most recent `gsdat` file from its [**OSF repo**](https://osf.io/27avb/) to your local working directory. 
 
-We then split the `gsdat` file into 80:20% training (or calibration) and testing (or validation). As the names imply the calibration data are used for calibrating the different models; whereas, the independent validation data are used to validate the predictions on any previously unseen data. This ensures that we can obtain reasonably unbiased accuracies of our predictions. It is also intended to guard against model [**Overfitting**](https://en.wikipedia.org/wiki/Overfitting), when using only cross-validation. Fig. \@ref(fig:training_validation) illustrates the relevant steps.
+We then split the `gsdat` file into 80:20% training (or calibration) and testing (or validation) sets. As the names imply the calibration data are used for calibrating the different models; whereas, the independent validation data are used to validate the predictions on any previously unseen data. This ensures that we can obtain reasonably unbiased accuracies of our predictions. It is also intended to guard against model [**Overfitting**](https://en.wikipedia.org/wiki/Overfitting), when using only cross-validation. Fig. \@ref(fig:training_validation) illustrates the relevant steps.
 
 ```{r training_validation, echo=FALSE, fig.cap="Model training and validation steps", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/training_validation.png")
@@ -546,7 +546,11 @@ stopCluster(mc)
 saveRDS(nn, "./Results/nn.rds")
 ```
 
-There are only a few limits on the number of currently available ML algorithms that could be tuned to the prediction task at hand. We restrict those to our favorites in this context (bagging, boosting & neural networks), but there is no reason why you can't explore others.   
+There are only a few limits on the number of currently available ML algorithms that could be tuned to the prediction task at hand. We restrict those to our favorites in this context (bagging, boosting & neural networks), but there is no reason why you can't or shouldn't explore others e.g., various Bayesian methods come to mind, though they tend to be computationally expensive.
+
+### Model stacking and validation {#stacking_validation}
+
+
 
 ```{r}
 # Model stacking setup ----------------------------------------------------
