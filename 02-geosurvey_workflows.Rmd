@@ -107,7 +107,7 @@ People ask what are all the spatial covariates that are used in the various pred
     - from [**Planet Labs**](https://www.planet.com/)
     - from [**MAXAR**](https://www.digitalglobe.com/)
     
-The current listing of the Tanzania grids that we are experimenting with is available in one of our [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We tend to use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other GIS options which could also be used for that purpose.
+The current listing of the Tanzania grids that we are experimenting with is available in one of our short [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We tend to use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other GIS options which could also be used for that purpose.
 
 ```{r Spatial_covariates, echo=FALSE, fig.cap="Examples of open-source spatial covariates used for making GeoSurvey predictions", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/spatial_covariate_examples.png")
@@ -201,7 +201,7 @@ Note that there are n = 16,219 (6.25 ha) quadrats (rows) and 69 variables (colum
 5. **bcount**, a count of all tagged buildings in a quadrat
 6. **ccount**, a grid count of the proportion of cropland area (n/16) in a quadrat
 
-BP, CP, and WP predictions are used to generate a Land Cover Classification (LCC) focused on the anthropic parts of landscapes, which we use for survey post-stratification, small area estimation of cropland area, building densities and development of ground-sampling plans e.g, for infrastructure surveys, soil and cropping systems and soil sampling plans that involve sending teams into the field. See the schema (Fig. \@ref(fig:L3_schema) below.
+BP, CP, and WP predictions are used to generate a Land Cover Classification (LCC) focused on the anthropic parts of landscapes, which we use for survey post-stratification, small area estimation of cropland area, building densities and development of ground-sampling plans e.g, for infrastructure surveys, soil and cropping systems and soil sampling plans that involve sending teams into the field. See the schema in (Fig. \@ref(fig:L3_schema) below.
 
 ```{r L3_schema, echo=FALSE, fig.cap="Land Cover Classification (LCC) schema", fig.align="center", out.width = '80%'}
 knitr::include_graphics("figures/L3.png")
@@ -223,7 +223,7 @@ w <- leaflet() %>%
 w ## plot widget 
 ```
 
-Individual GeoSurvey contributions are acknowledged via a wordcloud, which highlights the proportion of the quadrats that were completed by each GeoSurveyor. This also essentially provides a survey's signature for label vetting and quality control purposes.
+Individual GeoSurvey contributions are acknowledged via a wordcloud, which highlights the proportion of the quadrats that were completed by each GeoSurveyor. This also essentially provides a specific survey's signature for label vetting and quality control purposes.
 
 ```{r}
 # GeoSurvey contributions -------------------------------------------------
@@ -234,7 +234,7 @@ wordcloud(gscon$Var1, freq = gscon$Freq, scale = c(4,0.1), random.order = T)
 
 ## Step 2: Spatial prediction using ensemble machine learning {#geosurvey_step2}
 
-We now turn to the prediction part of the workflow. Many data scientists have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuracies. Our schema for this is shown in Fig. \@ref(fig:GS_workflow).
+We now turn to the prediction part of the GeoSurvey workflow. Many data scientists have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuracies. Our schema for this is shown in Fig. \@ref(fig:GS_workflow).
 
 ```{r GS_workflow, echo=FALSE, fig.cap="Generalized GeoSurvey prediction workflow", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/geosurvey_prediction_workflow.png")
@@ -363,7 +363,7 @@ suppressPackageStartupMessages({
 })
 ```
 
-If you've run the previous code chunks, the data should be in memory and can be accessed with the following. Alternatively, you can also download the most recent `gsdat` file from its [**OSF repo**]() to your working directory.
+If you've run the previous code, the data should be in memory and can be accessed with the following chunk. 
 
 ```{r}
 # Data setup --------------------------------------------------------------
@@ -371,7 +371,9 @@ rm(list=setdiff(ls(), c("gsdat","grids","glist"))) ## scrub extraneous objects i
 # gsdat <- gsdat[complete.cases(gsdat[ ,c(17:49)]),] ## removes incomplete cases
 ```
 
-We then split the `gsdat` file into 80:20% training (or calibration) and testing (or validation) dataframes. As the names imply the calibration data are used for calibrating the different models; whereas, the independent validation data are used to validate the predictions on any previously unseen data. This ensures that we can obtain unbiased of the accuracies of our predictions. It is also intended to guard against model [**Overfitting**](https://en.wikipedia.org/wiki/Overfitting), when using only cross-validation. Fig. \@ref(fig:training_validation) illustrates the relevant steps.
+Alternatively, you can also download the most recent `gsdat` file from its [**OSF repo**](https://osf.io/27avb/) to your local working directory. 
+
+We then split the `gsdat` file into 80:20% training (or calibration) and testing (or validation) dataframes. As the names imply the calibration data are used for calibrating the different models; whereas, the independent validation data are used to validate the predictions on any previously unseen data. This ensures that we can obtain reasonably unbiased accuracies of our predictions. It is also intended to guard against model [**Overfitting**](https://en.wikipedia.org/wiki/Overfitting), when using only cross-validation. Fig. \@ref(fig:training_validation) illustrates the relevant steps.
 
 ```{r training_validation, echo=FALSE, fig.cap="Model training and validation steps", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/training_validation.png")
@@ -396,7 +398,7 @@ cp_cal <- gs_cal$CP
 gf_cal <- gs_cal[,19:70]
 ```
 
-We utilize the `caret` package to calibrate various models. This first calibration chunk in the script demonstrates the basic `caret` syntax using only a subset of the spatial covariates in a generalized linear model. We refer to this as a [**Central Place Theory Model**](https://en.wikipedia.org/wiki/Central_place_theory), in which central places are identified with regard to observable human settlement distributions in the context of various infrastructures (e.g. roads)
+We then calibrate various models. This first calibration chunk in the script illustrates the basic `caret` syntax using only a subset of the spatial covariates in a [**Generalized linear model**](https://en.wikipedia.org/wiki/Generalized_linear_model). We refer to this as a [**Central Place Theory Model**](https://en.wikipedia.org/wiki/Central_place_theory), in which central places are identified with regard to their distances to various spatial infrastructure variables (e.g. roads, named cities, towns and villages, cell towers, various protected areas and places with access to surface water). 
 
 ```{r}
 # Central place theory model <glm> -----------------------------------------
@@ -429,7 +431,7 @@ stopCluster(mc)
 saveRDS(gl1, "./Results/gl1.rds")
 ```
 
-
+Note that because the calibration steps can be rather slow, the process is parallelized using the `doParallel` package. There are also other options available for this when using either hardwired *GPUs* and/or cloud computing resources such as [**AWS-EC2+**](https://aws.amazon.com/free/?sc_icampaign=acq_freetier&sc_icontent=awssm-evergreen-default-hero&sc_iplace=hero&trk=ha_awssm-evergreen-default-hero&sc_ichannel=ha&all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc) or [**Google Cloud**](https://cloud.google.com/).
 
 ```{r}
 # GLM with all covariates -------------------------------------------------
