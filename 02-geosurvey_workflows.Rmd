@@ -8,7 +8,7 @@ We gratefully acknowledge the team at [**QED**](https://qed.ai/), who built, mai
 
 ## Introduction {#GS-intro}
 
-Quantifying the geographical extent, location and spatial dynamics of cropland areas, rural and urban settlements and woody vegetation cover provides essential land cover information for monitoring and managing human dominated (*"anthropic"*) landscapes and the associated socio-economic, health, environmental and ecological impacts. Large portions of Africa remain *"terra incognita"* in this context. The main reason for gathering GeoSurvey observations is is that these allow us to rapidly assess where in a particular country significant impacts of humans on ecosystem processes can be expected. We have frequently been able to provide highly accurate assessments and spatial predictions of where anthropic impacts are likely to occur in remote places that are not readily reachable nor explorable by car or even on foot.
+Quantifying the geographical extent, location and spatial dynamics of cropland areas, rural and urban settlements and woody vegetation cover provides essential land cover information for monitoring and managing human dominated (*"anthropic"*) landscapes and the associated socio-economic, health, environmental and ecological impacts. Large portions of Africa remain *"terra incognita"* in this context. Hence, the main reason for gathering GeoSurvey observations is is that these allow us to rapidly assess where in a particular country significant impacts of humans on ecosystem processes can be expected. We have frequently been able to provide highly accurate assessments and spatial predictions of where anthropic impacts are likely to occur in remote places that are not readily reachable nor explorable by car or even on foot.
 
 [**GeoSurvey**](https://geosurvey.qed.ai/) is a platform for analyzing geospatial land cover observations. High resolution satellite images, mobile phone photography, and drone imagery can be systematically labeled by either trained photo interpreters and/or by *"crowds"* of [**Citizen Scientists**](https://en.wikipedia.org/wiki/Citizen_science). When done with care, these observations result in large, well-structured, properly labeled, geospatial data sets that are suitable for machine learning and geostatistical predictions of land cover and in some instances for predicting land use. The detailed manual for conducting your own GeoSurveys is available at: [**GeoSurvey manual**](https://docs.google.com/document/d/1y-HYUSYpDVESPdmEcl3I2kuL0bwrT41wMiq0zE9uzOs/edit). The manual should definitely be consulted to obtain information about how GeoSurvey can be used to carry out potentially high value surveys. There is also a great slide deck available [**here**](https://docs.google.com/presentation/d/1vBQ-By8LLvyJQzMBFaqUuRwFFeL7Y8QXUtBifx-3jn4/edit#slide=id.g14d47405c8_0_0), which illustrates different land cover and use labeling approaches. We shall not cover these issues in this chapter and assume that we already have well-designed GeoSurvey data and collocated spatial covariates in hand.
 
@@ -55,7 +55,6 @@ dir.create("data", showWarnings = F)
 dir.create("results", showWarnings = F)
 
 # download GeoSurvey data from OSF or Dropbox
-# also see the corresponding sampling frame @ https://github.com/mgwalsh/Sampling/blob/master/TZ_GS_sample.R
 download("https://osf.io/9gndf?raw=1", "./data/TZ_geos_2018.csv.zip", mode = "wb")
 unzip("./data/TZ_geos_2018.csv.zip", overwrite = T)
 geos <- read.table("./data/TZ_geos_2018.csv", header = T, sep = ",")
@@ -192,16 +191,13 @@ The main end product of all of this wrangling (\@ref(geosurvey_step1) is a R dat
 str(gsdat)
 ```
 
-Note that there are n = 16,219 (6.25 ha) quadrats (rows) and 69 variables (columns) in this dataframe. In this particular case, the actual GeoSurvey variables that we would like to predict from the spatial covariates include:
+Note that there are n = 16,219 (6.25 ha) quadrats (rows) and 69 variables (columns) in this dataframe. In this particular case, the actual GeoSurvey variables (sensu *features*) that we would like to predict from the spatial covariates include:
 
 1. **BP**, the observed presence/absence of buildings in a quadrat
 2. **CP**, the observed presence/absence of croplands in a quadrat
 3. **WP**, the observed presence/absence of woody vegetation cover >60% in a quadrat
-4. **rice**, the presence/absence of paddy rice in a quadrat
-5. **bcount**, a count of all tagged buildings in a quadrat
-6. **ccount**, a grid count of the proportion of cropland area (n/16) in a quadrat
 
-BP, CP, and WP predictions are used to generate a Land Cover Classification (LCC) focused on the anthropic parts of landscapes, which we use for survey post-stratification, small area estimation of cropland area, building densities and development of ground-sampling plans e.g, for infrastructure surveys, soil and cropping systems and soil sampling plans that involve sending teams into the field. See the schema in (Fig. \@ref(fig:L3_schema) below.
+BP, CP, and WP predictions are used to generate a generalized Land Cover Classification (LCC), which focuses on the anthropic parts of landscapes that we subsequently use for survey post-stratification, small area estimation of cropland area, building densities and the development of ground-sampling plans e.g, for infrastructure surveys, soil and cropping systems and soil sampling plans that involve sending teams into the field. See the schema in (Fig. \@ref(fig:L3_schema) below.
 
 ```{r L3_schema, echo=FALSE, fig.cap="Land Cover Classification (LCC) schema", fig.align="center", out.width = '80%'}
 knitr::include_graphics("figures/L3.png")
