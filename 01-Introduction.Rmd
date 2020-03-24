@@ -45,7 +45,7 @@ Adaptive assessment (AA) “tries to define what is known and what is not known 
 
 This book is about the processes for producing and using (useful) data, information and algorithms for adaptive management via adaptive assessment workflows. We now have many new tools, including high-resolution satellite observations, telecom-based data collection and transmission tools and low cost laboratory and data analysis techniques, which we did not have available 10 years ago. The book provides introductions to the new assessment techniques, which use those new technologies. 
 
-```{r monitoring_workflow, echo=FALSE, fig.align="center", fig.cap="The six main steps in adaptive cropland monitoring.", out.width = '80%'}
+```{r monitoring_workflow, echo=FALSE, fig.align="center", fig.cap="The six main steps for adaptive cropland monitoring.", out.width = '80%'}
 knitr::include_graphics("figures/Cropland_monitoring_workflow.png")
 ```
 
