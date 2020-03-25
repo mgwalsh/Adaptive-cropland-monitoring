@@ -27,7 +27,7 @@ The intent of the chapter is to describe starter code for predictive mapping and
 
 In order to monitor changing landscapes the first three steps should be repeated over time; i.e., to facilitate step 4. The end of this chapter gives some suggestions on as to how to do just that, though we cannot generate a fully-worked example of space-time land cover predictions at this point in time. 
 
-## Step 1: Data wrangling {#geosurvey_step1}
+## Data wrangling {#geosurvey_step1}
 
 Assembling analysis-ready dataframes is typically a major task that can take an inordinate amount of a data scientist's time and effort both inside and outside of the actual prediction workflows (e.g., for covariate image and GIS pre-processing and data vetting). Data providers are usually encouraged to provide *"clean"* datasets. While GeoSurvey does the *"clean bits"* pretty much automatically, in some instances the veracity of the observations, particularly from crowd-sourced data collections, should be thoroughly quality checked by GeoSurvey administrators. There is an example script for doing that at: [**Input screening**](https://github.com/mgwalsh/Geosurvey/blob/master/GS_input_screening.R), also see .
 
@@ -50,28 +50,24 @@ suppressPackageStartupMessages({
 There are already many good examples of GeoSurveys of different countries that are available. For Africa, exemplar, *"tidied-up"* data are publicly available on the associated [**Open Science Framework**](https://osf.io/vxc97/) GeoSurvey repository, which also mirrors all of the associated data assembly and prediction code at [**Github**](https://github.com/mgwalsh/Cropland-Atlas). The following chunk loads all of the relevant data for Tanzania from its [**OSF repo**](https://osf.io/j8y3z/) and on Dropbox.
  
 ```{r}
-dir.create("figures", showWarnings = F)
 dir.create("data", showWarnings = F)
 dir.create("results", showWarnings = F)
 
-# download GeoSurvey data from OSF or Dropbox
-download("https://osf.io/9gndf?raw=1", "./data/TZ_geos_2018.csv.zip", mode = "wb")
-unzip("./data/TZ_geos_2018.csv.zip", overwrite = T)
-geos <- read.table("./data/TZ_geos_2018.csv", header = T, sep = ",")
-geos$BIC <- as.factor(ifelse(geos$CP == "Y" & geos$BP == "Y", "Y", "N")) ## identifies croplands with buildings
+# download GeoSurvey data
+download("https://osf.io/uhx9b?raw=1", "data/TZ_geos_1718.csv.zip", mode = "wb")
+unzip("data/TZ_geos_1718.csv.zip", overwrite = T)
+geos <- read.table("data/TZ_geos_1718.csv", header = T, sep = ",")
 
 # download GADM-L3 shapefile (courtesy: http://www.gadm.org)
-download("https://www.dropbox.com/s/bhefsc8u120uqwp/TZA_adm3.zip?raw=1", "./data/TZA_adm3.zip", mode = "wb")
-unzip("./data/TZA_adm3.zip", overwrite = T)
-shape <- shapefile("./data/TZA_adm3.shp")
+download("https://www.dropbox.com/s/bhefsc8u120uqwp/TZA_adm3.zip?raw=1", "data/TZA_adm3.zip", mode = "wb")
+unzip("data/TZA_adm3.zip", overwrite = T)
+shape <- shapefile("data/TZA_adm3.shp")
 
-# download raster stack (note this is a big 1+ Gb download, which a take a while to download depending ...)
-# download("https://osf.io/ke5ya?raw=1", "TZ_250m_2019.zip", mode = "wb") ## OSF is persistent
-# download("https://www.dropbox.com/s/ejl3h62hojnhh3a/TZ_250m_2019.zip?raw=1", "TZ_250m_2019.zip", mode = "wb") ## DB tends to be faster
+# download raster stack (note this is a big 1+ Gb download)
+download("https://osf.io/ke5ya?raw=1", "TZ_250m_2019.zip", mode = "wb")
 unzip("TZ_250m_2019.zip", overwrite = T)
 glist <- list.files(pattern="tif", full.names = T)
 grids <- stack(glist)
-grids ## examines the structure of the grid stack and its dimensions
 ```
 
 ### Spatial covariates (grids) {#spatial-covariates}
@@ -106,7 +102,7 @@ People ask what are all the spatial covariates that are used in the various pred
     - from [**Planet Labs**](https://www.planet.com/)
     - from [**MAXAR**](https://www.digitalglobe.com/)
     
-The current listing of the Tanzania grids that we are experimenting with is available in one of our short [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We tend to use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are many other GIS options which could also be used for that purpose.
+The current listing of the Tanzania grids that we are experimenting with is available in one of our short [**Tanzania reports 2019**](https://osf.io/7acs3/). All of the relevant layers were resampled to 250 m resolution on a common Lambert-Azimuthal Equal Area coordinate reference system `CRS(+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs")`. Note that the pre-processing of the resulting grid stack is generally done outside of R. We tend to use [**GRASS**](https://grass.osgeo.org/), because it is much faster and convenient to do it there, but there are also many other GIS options which could be used for that purpose.
 
 ```{r Spatial_covariates, echo=FALSE, fig.cap="Examples of open-source spatial covariates used for making GeoSurvey predictions", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/spatial_covariate_examples.png")
@@ -228,7 +224,7 @@ set.seed(1235813)
 wordcloud(gscon$Var1, freq = gscon$Freq, scale = c(4,0.1), random.order = T)
 ```
 
-## Step 2: Spatial prediction using ensemble machine learning {#geosurvey_step2}
+## Spatial prediction using ensemble machine learning {#geosurvey_step2}
 
 We now turn to the prediction part of the GeoSurvey workflow. Many data scientists have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuracies. Our schema for this is shown in Fig. \@ref(fig:GS_workflow).
 
@@ -359,15 +355,13 @@ suppressPackageStartupMessages({
 })
 ```
 
-If you've run the previous code, the needed data should be in memory and can be accessed with the following chunk.
+If you have run the previous code, the needed data should be in memory and can be accessed via the subsequent chunk. Alternatively, you can also download the most recent `gsdat` file from its [**OSF repo**](https://osf.io/27avb/) to your local working directory.
 
 ```{r}
 # Data setup --------------------------------------------------------------
 rm(list=setdiff(ls(), c("gsdat","grids","glist"))) ## scrub extraneous objects in memory
 # gsdat <- gsdat[complete.cases(gsdat[ ,c(17:49)]),] ## removes incomplete cases
 ```
-
-Alternatively, you can also download the most recent `gsdat` file from its [**OSF repo**](https://osf.io/27avb/) to your local working directory. 
 
 We then split the `gsdat` file into 80:20% training (or calibration) and testing (or validation) sets. As the names imply the calibration data are used for calibrating the different models; whereas, the independent validation data are used to validate the predictions on any previously unseen data. This ensures that we can obtain reasonably unbiased accuracies of our predictions. It is also intended to guard against model [**Overfitting**](https://en.wikipedia.org/wiki/Overfitting), when using only cross-validation. Fig. \@ref(fig:training_validation) illustrates the relevant steps.
 
@@ -548,6 +542,7 @@ There are only a few limits on the number of currently available ML algorithms t
 
 
 
+
 ```{r}
 # Model stacking setup ----------------------------------------------------
 preds <- stack(1-gl1.pred, 1-gl2.pred, 1-rf.pred, 1-gb.pred, 1-nn.pred)
@@ -637,7 +632,7 @@ w ## plot widget
 saveWidget(w, 'TZ_CP_2018.html', selfcontained = T) ## save html ... change feature names here
 ```
 
-## Step 3: Small Area Estimates (SAE) {#geosurvey_sae}
+## Small Area Estimates (SAE) {#geosurvey_sae}
 
 In this section we show how to use GeoSurvey data and predictions for small area estimation of cropland area proportions and building densities.
 
