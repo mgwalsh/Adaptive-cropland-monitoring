@@ -1,0 +1,128 @@
+# Field surveys {#fieldsurveys}
+
+*Edited by: Markus Walsh*
+
+## Introduction {#FS-intro}
+
+This chapter illustrates procedures for organizing and conducting field surveys and monitoring activities.
+
+## Setting up a field sampling plan {#sampling-plan}
+
+This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy.   
+
+A sample frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. 
+
+
+```{r}
+suppressPackageStartupMessages({
+  require(downloader)
+  require(rgdal)
+  require(raster)
+  require(BalancedSampling)
+  require(leaflet)
+  require(htmlwidgets)
+})
+```
+
+```{r}
+# Data setup --------------------------------------------------------------
+# create a data folder in your current working directory
+dir.create("TZ_sample", showWarnings=F)
+
+# download & stack cropland probability/mask & distance to "major roads" grids
+download("https://www.dropbox.com/s/83qwr9stamkrqfi/TZ_sample_grids.zip?raw=1", "TZ_sample_grids.zip", mode="wb")
+unzip("TZ_sample_grids.zip", overwrite=T)
+glist <- list.files(pattern="tif", full.names=T)
+grids <- stack(glist)
+
+# download GADM-L3 shapefile (courtesy: http://www.gadm.org)
+download("https://www.dropbox.com/s/bhefsc8u120uqwp/TZA_adm3.zip?raw=1", "TZA_adm3.zip", mode="wb")
+unzip("TZA_adm3.zip", overwrite=T)
+shape <- shapefile("TZA_adm3.shp")
+```
+
+# Sample setup ------------------------------------------------------------
+# create a ROI image based on cropland mask and distance to nearest main roads
+cpt <- 1    ## set cropland mask to 1
+rdt <- 2.5  ## set maximum distance to the nearest "major road" (in km)
+roi <- overlay(grids, fun=function(x) 
+{return(ifelse(x[1] >= cpt && x[2] > 0 && x[2] <= rdt, 1, 0))})
+plot(roi, axes=F, legend=F)
+
+# extract ROI coordinates
+coord <- coordinates(roi)
+index <- extract(roi, coord)
+index <- as.data.frame(cbind(coord, index))
+rmask <- index[which(index$index == 1),]
+
+# Geographically balanced sampling ----------------------------------------
+# set sampling parameters
+N <- nrow(rmask) ## population size (in 250 m pixels)
+n <- round(N/16*0.1,0) ## set sample size (number of sampling locations)
+p <- rep(n/N,N)  ## inclusion probabilities
+
+# draw geographically balanced sample
+set.seed(6405)                      ## sets repeatable randomization seed
+B <- cbind(p, rmask[,1], rmask[,2]) ## specifies balancing variables
+rsamp <- cube(p, B)                 ## samples from population
+
+# plot sample result
+plot(roi, axes=F, legend=F)
+points(rmask[rsamp,1], rmask[rsamp,2], pch=3, col="red", cex=0.3)
+
+# Write files -------------------------------------------------------------
+# extract sample coordinates
+x <- rmask[rsamp,1]
+y <- rmask[rsamp,2]
+xy <- data.frame(cbind(x,y))
+# write.csv(xy, "xy.csv", row.names = F)
+
+# attach GADM-L3 and above unit names from shape
+coordinates(xy) <- ~x+y
+crs(xy) <- "+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs"
+sloc <- spTransform(xy, CRS(proj4string(shape)))
+gadm <- sloc %over% shape
+sloc <- as.data.frame(sloc)
+samp <- cbind(gadm[ ,c(5,7,9)], sloc)
+colnames(samp) <- c("Region", "District", "Ward", "Lon", "Lat")
+write.csv(samp, "TZ_sample.csv", row.names = F)
+
+# Sampling map widget -----------------------------------------------------
+# render map
+w <- leaflet() %>% 
+  addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
+  addCircleMarkers(samp$Lon, samp$Lat, clusterOptions = markerClusterOptions())
+w ## plot widget 
+
+# save widget
+saveWidget(w, 'TZ_sample.html', selfcontained = T)
+
+
+## Procedures for collecting cropping systems observations
+
+
+## Procedures for collecting physical (rock, soil and plant) samples
+
+You will need the following equipment & materials
+
+An Android phone or tablet.
+A separate GPS device (optional, but highly recommended for field navigation).
+A soil auger marked with colored tape at 20 and 50 cm from the tip.
+2, 20-liter plastic buckets.
+A 5-liter plastic jerry can for water.
+A rope marked with colored tape at 2.82, 4.61 and 5.64 meters.
+Sturdy, ~2-3 liter plastic bags, 2 bags for each soil sample.
+Sticky labels, 2 for each soil sample.
+
+Before you go into the field
+1.	Install Android software and ODK forms
+To use the AfSIS ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
+ODK Collect (to georeference, time stamp, and log in your soil sample)
+XZing barcode scanner (to read QR code labels)
+GPS Essentials (if you are going to be using your phone or tablet for field navigation rather than a separate GPS unit).
+You can locate the applications on Google Play by searching for them by name. Note that you will need an Internet connection for this.
+Once you have installed the software on your Android device: start ODK Collect and then set the server address that will link you to the “Soil sample” form:
+General Settings > Configure platform > URL. The General Settings menu can be accessed by tapping the <left> menu button on your device. 
+Don’t worry about entering a Username or Password. They are not needed.
+Set the URL field to: http://mobilesurvey.qed.ai/afsis_tablet.
+This allows you to download blank forms for use on your Android device. It also allows you to save any completed forms to a database on the server. To download the blank ODK Soil sample form to your device, follow these 3 steps:
