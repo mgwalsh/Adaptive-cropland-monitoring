@@ -1,4 +1,4 @@
-# Field surveys {#fieldsurveys}
+# Field surveys and sample collections {#fieldsurveys}
 
 *Edited by: Markus Walsh ... ?*
 
@@ -103,7 +103,7 @@ saveWidget(w, 'TZ_sample.html', selfcontained = T)
 You will need the following equipment & materials
 
 1. An Android phone or tablet.
-2. A separate GPS device (optional, but highly recommended for field navigation).
+2. A separate GPS device (optional, but is highly recommended for field navigation).
 3. A soil auger marked with colored tape at 20 and 50 cm from the tip.
 4. 2, 20-liter plastic buckets.
 5. A 5-liter plastic jerry can for water.
@@ -111,15 +111,16 @@ You will need the following equipment & materials
 7. Sturdy, ~2-3 liter plastic/or paper bags, 2 bags for each soil sample.
 8. Sticky labels, 2 for each soil sample.
 
-Before you go into the field
-1.	Install Android software and ODK forms
-To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
-ODK Collect (to georeference, time stamp, and log in your soil sample)
-XZing barcode scanner (to read QR code labels)
-GPS Essentials (if you are going to be using your phone or tablet for field navigation rather than a separate GPS unit).
-You can locate the applications on Google Play by searching for them by name. Note that you will need an Internet connection for this.
-Once you have installed the software on your Android device: start ODK Collect and then set the server address that will link you to the “Soil sample” form:
+Before you go into the field:
+*	Install ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
+* ODK Collect (to georeference, time stamp, and log in your soil sample)
+* XZing barcode scanner (to read QR code labels)
+* GPS Essentials (if you are going to be using your phone or tablet for field navigation rather than a separate GPS unit).
+
+You can locate the applications on Google Play by searching for them by name. Note that you will need an Internet connection for this. Once you have installed the software on your Android device: start ODK Collect and then set the server address that will link you to the “Soil sample” form:
 General Settings > Configure platform > URL. The General Settings menu can be accessed by tapping the <left> menu button on your device. 
-Don’t worry about entering a Username or Password. They are not needed.
-Set the URL field to: http://mobilesurvey.qed.ai/afsis_tablet.
+
+* Don’t worry about entering a Username or Password. They are not needed.
+* Set the URL field to: http://??.
+
 This allows you to download blank forms for use on your Android device. It also allows you to save any completed forms to a database on the server. To download the blank ODK Soil sample form to your device, follow these 3 steps:
