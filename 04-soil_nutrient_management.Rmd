@@ -1,0 +1,44 @@
+# Soil nutrient management recommendations {#snmr}
+
+*Edited by: Markus Walsh, Keith Shepherd, Jordan Chamberlin, ... ?*
+
+## Introduction {#snm-intro}
+
+In this chapter we focus on  our overall soil nutrient and acidity management (SNM) schema (Fig. . When all or specific soil nutrients are thought to be limiting there are typically 3-4 strategic decision options including: whether to (1) perform a potentially expensive remediation (e.g., with fertilizers, lime, manure and organic matter etc) to reduce constraints, (2) to do nothing, or (3) take relatively inexpensive measurements and use this information to decide whether to (a) remediate or (b) do nothing. The 4th option is to conserve soils that are currently in reasonably good condition. We take a step-wise approach to identify major cropland nutrient management constraints in four steps: (1) severe constraints, (2) soil cation exchange capacity (CEC) imbalances including either strong soil acidity  or salinity-sodicity, (3) specific nutrient deficiencies, and (4) special constraints as follows:
+
+1. **Severe constraints:** Are there any severe constraints that may place a site at high risk for soil degradation? Note that these are <or> rules, meaning if any one is true, severe constraints are likely to exist at a given site. The main spatial indicators include:
+  - Low annual precipitation (e.g. <350 mm yr-1)
+  - High long-term rainfall erosivity (e.g. Modified Fournier Index >800 units)
+  - Shallow soils (e.g. <20 cm soil depth)
+  - Sharp textural discontinuities at soil depth (e.g. sand or loam over clay)
+  - High aggregate instability (e.g., from Laser Diffraction Particle Size analyses)
+  - Steep slopes (e.g. >30%)
+  - Low long-term average vegetation cover (e.g. fPAR <10%)
+2.	**CEC imbalances:** Are cropland pH and/or sodicity amendments needed? Strong soil acidity is a basic constraint and liming may increase availability of certain nutrients (particularly, Fe, Mn, B, Cu, Zn). Soil sodicity dramatically increases soil erosion risk and can potentially be mitigated by the application of gypsum. 
+  - As a general guide for pH <6.5, a minimum lime requirement (CaCO3 equivalent) of 1 t ha-1 for every 1 meq 100 gm-1 of exchangeable acidity will be required. But to grow highly sensitive crops, up to three times this rate may be required. 
+  - At low levels of extractable Mg (<5 cmolc kg-1) or high exchangeable Ca:Mg levels (>8 units), dolomitic lime sources should be used, as distinct from calcium-based lime sources.
+  - High soil pH (>7.5) can induce phosphorous and micronutrient deficiencies (e.g., for Fe, Mn, B, Cu, Zn), increasing the risk of nutrient imbalances and poor responses to NPK fertilizer applications. High pH values also pose a risk of raised Na levels that may cause soil structural problems and Na toxicity. 
+  - The occurrence of sodic soils with high “exchangeable sodium percentage” (ESP) of CEC of >6%. High exchangeable sodium levels increase susceptibility to soil structural collapse and soil erosion and such soils are generally unsuitable for cultivation or require careful management. Sodicity can also cause nutrient imbalances that directly affect plant growth. Sodic soils may require applications of gypsum (CaSO4·2H2O) to displace sodium.
+  - High electrical conductivity of soil water extracts indicates levels of total soluble salts and soil salinity and can adversely affect the growth of most crops. 
+3.	**Nutrient RALs:** Which specific nutrients are deficient or limiting?
+  - Nitrogen is a general constraint as soil supply levels are typically insufficient to meet crop demands. Soil supply levels are principally related to soil organic matter content, texture and pH.
+  - Phosphorus deficiencies: in addition to readily extractable pools, P-bioavailability is conditioned by P-sorption capacity, total P, pH and supply from organic sources.
+  - Potassium deficiencies: are related to the supply from intermediate mineral pools in addition to readily extractable pools.
+  - Micronutrient deficiencies (e.g. Fe, Mn, B, Cu) principally depend on mineralogy, organic matter levels and soil pH.
+4.	**Special constraints:** The constraints below may increase the risk for poor responses to fertilizer applications.
+  - Critically low soil organic matter levels can lead to poor responses to applied nutrients due to soil structural limitations and biotic constraints. Critical SOM levels depend on soil mineralogy and texture and are readily determined using MIR measurements.
+  - Critically low responses and/or returns on investments to fertilizer applications assessed from nutrient input randomized control trials (RCT) and crop yield surveys.
+  - Critically low, especially micro-nutrient concentrations and compositions, from livestock biomarker (faecal and/or blood) samples.
+
+In a spatial context, these rules can be coalesced into a fairly simple diagnostic *“Soil Nutrient Management”* (SNM) schema, which can be mapped and monitored consistently with on-ground, lab, and remote sensing data (Fig. ). Notably, all of the relevant SNM indicators can also be directly modeled and inferred via our field, laboratory and remote sensing protocols. We have an established data pipeline in R & GRASS for this purpose, and have also previously shown that the associated variables can be mapped over large cropland areas of Africa (see e.g. Hengl et al. 2017). Each ROI receives a “report card” that details the spatial distribution of these indicators.
+
+```{r asnm_schema, echo=FALSE, fig.cap="Soil nutrient and acidity management decision tree", fig.align="center", out.width = '90%'}
+knitr::include_graphics("figures/asnm_schema.png")
+```
+
+## Spectral calibrations {#spec-cal}
+
+We apply Africa-wide MIR calibration results to define scoring rules to help with prioritizing cropland soil remediation interventions. The rules are based on the notional trade-off between the prevalence of soils with nutrient limitations, primary productivity and other ecosystem services that imply that there is a “remediation action level” (RAL) so that if the true level of the nutrient (or acidity) limitations were known, one would remediate. A function like this (and there can be variants) is needed to consistently rate aggregate soil condition and to monitor remediation progress and returns on investments. Depending on variations in economic/ecological risks and risk preferences, the RAL’s might/would vary over space and time.
+
+Machine Learning models based on six algorithms including Partial Least Squares (Mevik et al. 2016), Elastic Net (Friedman et al. 2010), Random Forests (Liaw & Wiener 2002), Generalized Boosting (Ridgeway 2015), Cubist (Kuhn et al. 2016a) and Bayesian Additive Regression Trees (Kapelner & Bleich 2016) were stacked to produce new ensemble predictions for extractable soil nutrients, soil organic carbon and total nitrogen based on low cost Alpha-MIR measurements.
+
