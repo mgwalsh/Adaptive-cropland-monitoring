@@ -8,7 +8,7 @@ This chapter illustrates procedures for organizing and conducting field surveys 
 
 ## Setting up a field sampling plan {#sampling-plan}
 
-This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy.  A geograhically consistent sampling frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. The following provides an example that is based on the need for sampling cropland survey areas in Tanzania.
+This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy.  A geograhically consistent sampling frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. The following provides an example that is based on the expressed need for sampling cropland survey areas in Tanzania by the Tanzania Agricultural Research Institute (TARI).
 
 ```{r}
 suppressPackageStartupMessages({
