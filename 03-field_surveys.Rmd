@@ -4,7 +4,7 @@
 
 ## Introduction {#FS-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys and sample collections. This is the practical side-of-things, which gets field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled in a consistent manner, which can be analyzed. Because field survey activities are expensive, but also of particulary high value to any subsequent analyses it is very important to plan and execute these carefully. 
+This chapter illustrates procedures for organizing and conducting field surveys and physical sample collections. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in a consistent manner, which can be analyzed. Because field survey activities are expensive, but also because of their particulary high value to any subsequent analyses it is very important to plan and execute these carefully. 
 
 ## Setting up a field sampling plan {#sampling-plan}
 
