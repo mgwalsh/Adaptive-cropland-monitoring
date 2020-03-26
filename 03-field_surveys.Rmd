@@ -1,6 +1,6 @@
 # Field surveys {#fieldsurveys}
 
-*Edited by: Markus Walsh*
+*Edited by: Markus Walsh ... ?*
 
 ## Introduction {#FS-intro}
 
@@ -8,10 +8,7 @@ This chapter illustrates procedures for organizing and conducting field surveys 
 
 ## Setting up a field sampling plan {#sampling-plan}
 
-This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy.   
-
-A sample frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. 
-
+This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy.  A geograhically consistent sampling frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. The following provides an example that is based on the need for sampling cropland survey areas in Tanzania.
 
 ```{r}
 suppressPackageStartupMessages({
@@ -41,6 +38,7 @@ unzip("TZA_adm3.zip", overwrite=T)
 shape <- shapefile("TZA_adm3.shp")
 ```
 
+```{r}
 # Sample setup ------------------------------------------------------------
 # create a ROI image based on cropland mask and distance to nearest main roads
 cpt <- 1    ## set cropland mask to 1
@@ -86,7 +84,9 @@ sloc <- as.data.frame(sloc)
 samp <- cbind(gadm[ ,c(5,7,9)], sloc)
 colnames(samp) <- c("Region", "District", "Ward", "Lon", "Lat")
 write.csv(samp, "TZ_sample.csv", row.names = F)
+```
 
+```{r}
 # Sampling map widget -----------------------------------------------------
 # render map
 w <- leaflet() %>% 
@@ -96,27 +96,24 @@ w ## plot widget
 
 # save widget
 saveWidget(w, 'TZ_sample.html', selfcontained = T)
-
+```
 
 ## Procedures for collecting cropping systems observations
 
-
-## Procedures for collecting physical (rock, soil and plant) samples
-
 You will need the following equipment & materials
 
-An Android phone or tablet.
-A separate GPS device (optional, but highly recommended for field navigation).
-A soil auger marked with colored tape at 20 and 50 cm from the tip.
-2, 20-liter plastic buckets.
-A 5-liter plastic jerry can for water.
-A rope marked with colored tape at 2.82, 4.61 and 5.64 meters.
-Sturdy, ~2-3 liter plastic bags, 2 bags for each soil sample.
-Sticky labels, 2 for each soil sample.
+1. An Android phone or tablet.
+2. A separate GPS device (optional, but highly recommended for field navigation).
+3. A soil auger marked with colored tape at 20 and 50 cm from the tip.
+4. 2, 20-liter plastic buckets.
+5. A 5-liter plastic jerry can for water.
+6. A rope marked with colored tape at 2.82, 4.61 and 5.64 meters.
+7. Sturdy, ~2-3 liter plastic/or paper bags, 2 bags for each soil sample.
+8. Sticky labels, 2 for each soil sample.
 
 Before you go into the field
 1.	Install Android software and ODK forms
-To use the AfSIS ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
+To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
 ODK Collect (to georeference, time stamp, and log in your soil sample)
 XZing barcode scanner (to read QR code labels)
 GPS Essentials (if you are going to be using your phone or tablet for field navigation rather than a separate GPS unit).
