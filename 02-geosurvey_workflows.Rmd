@@ -271,7 +271,7 @@ geosv <- read.csv(paste(dat_dir, "/1MQ_validation_data.csv", sep=""), stringsAsF
 geosv$User <- do.call("rbind", strsplit(geosv$User, split="@"))[,1]
 ```
 
-This following chunk removes any coordinate duplicates, where those exist, by *accident* or *intent*.
+This following chunk removes any quadrat duplicates, where those exist, by *accident* or *intent*.
 
 ```{r}
 # Remove coordinate duplicates --------------------------------------------
@@ -538,7 +538,7 @@ saveRDS(nn, "./Results/nn.rds")
 
 There are only a few limits on the number of currently available ML algorithms that could be tuned to the prediction task at hand. We restrict those to our favorites in this context (bagging, boosting & neural networks), but there is no reason why you can't or shouldn't explore others e.g., various Bayesian methods come to mind, though they tend to be computationally expensive.
 
-### Model stacking and validation {#stacking_validation}
+### Model stacking and validation {#ML_stacking}
 
 
 
@@ -685,6 +685,7 @@ dir.create("Results", showWarnings = F)
 write.csv(saedat, "./Results/TZ_sae.csv", row.names = F)
 ```
 
+```{r}
 # Cropland area models ----------------------------------------------------
 # binomial models of GeoSurvey cropland grid counts
 summary(m0 <- glm(cbind(ccount, 16-ccount) ~ 1, family=binomial, saedat)) ## mean model
@@ -710,6 +711,8 @@ plot(m2.pred, axes=F)
 gspreds <- stack(m1.pred, m2.pred)
 names(gspreds) <- c("m1","m2")
 writeRaster(gspreds, filename="./Results/TZ_cp_sae.tif", datatype="FLT4S", options="INTERLEAVE=BAND", overwrite=T)
+```
+
 
 # Small area estimates (SAE)
 # post-stratified by admin units
