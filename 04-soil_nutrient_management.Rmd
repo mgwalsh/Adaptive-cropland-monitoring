@@ -4,7 +4,7 @@
 
 ## Introduction {#snm-intro}
 
-In this chapter we focus on  our overall soil nutrient and acidity management (SNM) schema (Fig. . When all or specific soil nutrients are thought to be limiting there are typically 3-4 strategic decision options including: whether to (1) perform a potentially expensive remediation (e.g., with fertilizers, lime, manure and organic matter etc) to reduce constraints, (2) to do nothing, or (3) take relatively inexpensive measurements and use this information to decide whether to (a) remediate or (b) do nothing. The 4th option is to conserve soils that are currently in reasonably good condition. We take a step-wise approach to identify major cropland nutrient management constraints in four steps: (1) severe constraints, (2) soil cation exchange capacity (CEC) imbalances including either strong soil acidity  or salinity-sodicity, (3) specific nutrient deficiencies, and (4) special constraints as follows:
+In this chapter we focus on  our overall soil nutrient and acidity management (SNM) schema (Fig. . When all or specific soil nutrients are thought to be limiting there are typically 3-4 strategic decision options including: whether to (1) perform a potentially expensive remediation (e.g., with fertilizers, lime, manure and organic matter etc) to reduce constraints, (2) to do nothing, or (3) take relatively inexpensive measurements and use this information to decide whether to (a) remediate or (b) do nothing. The 4th option is to conserve soils that are currently in reasonably good condition. We take a step-wise approach to identify major cropland nutrient management constraints in four steps. We identify, (1) severe constraints, (2) soil cation exchange capacity (CEC) imbalances including either strong soil acidity or salinity-sodicity, (3) specific nutrient deficiencies, and (4) special constraints as follows:
 
 1. **Severe constraints:** Are there any severe constraints that may place a site at high risk for soil degradation? Note that these are <or> rules, meaning if any one is true, severe constraints are likely to exist at a given site. The main spatial indicators include:
   - Low annual precipitation (e.g. <350 mm yr-1)
@@ -14,8 +14,8 @@ In this chapter we focus on  our overall soil nutrient and acidity management (S
   - High aggregate instability (e.g., from Laser Diffraction Particle Size analyses)
   - Steep slopes (e.g. >30%)
   - Low long-term average vegetation cover (e.g. fPAR <10%)
-2.	**CEC imbalances:** Are cropland pH and/or sodicity amendments needed? Strong soil acidity is a basic constraint and liming may increase availability of certain nutrients (particularly, Fe, Mn, B, Cu, Zn). Soil sodicity dramatically increases soil erosion risk and can potentially be mitigated by the application of gypsum. 
-  - As a general guide for pH <6.5, a minimum lime requirement (CaCO3 equivalent) of 1 t ha-1 for every 1 meq 100 gm-1 of exchangeable acidity will be required. But to grow highly sensitive crops, up to three times this rate may be required. 
+2.	**CEC imbalances:** Are cropland pH and/or sodicity amendments needed? Strong soil acidity is a basic constraint and liming may increase availability of certain nutrients. Soil sodicity dramatically increases soil erosion risks and can potentially be mitigated by the application of gypsum. 
+  - As a general guide for soils with pH <6.5, a minimum lime requirement (CaCO3 equivalent) of 1 t ha-1 for every 1 meq 100 gm-1 of exchangeable acidity will be required. But to grow highly sensitive crops, up to three times this rate may be required. 
   - At low levels of extractable Mg (<5 cmolc kg-1) or high exchangeable Ca:Mg levels (>8 units), dolomitic lime sources should be used, as distinct from calcium-based lime sources.
   - High soil pH (>7.5) can induce phosphorous and micronutrient deficiencies (e.g., for Fe, Mn, B, Cu, Zn), increasing the risk of nutrient imbalances and poor responses to NPK fertilizer applications. High pH values also pose a risk of raised Na levels that may cause soil structural problems and Na toxicity. 
   - The occurrence of sodic soils with high “exchangeable sodium percentage” (ESP) of CEC of >6%. High exchangeable sodium levels increase susceptibility to soil structural collapse and soil erosion and such soils are generally unsuitable for cultivation or require careful management. Sodicity can also cause nutrient imbalances that directly affect plant growth. Sodic soils may require applications of gypsum (CaSO4·2H2O) to displace sodium.
@@ -40,5 +40,63 @@ knitr::include_graphics("figures/asnm_schema.png")
 
 We apply Africa-wide MIR calibration results to define scoring rules to help with prioritizing cropland soil remediation interventions. The rules are based on the notional trade-off between the prevalence of soils with nutrient limitations, primary productivity and other ecosystem services that imply that there is a “remediation action level” (RAL) so that if the true level of the nutrient (or acidity) limitations were known, one would remediate. A function like this (and there can be variants) is needed to consistently rate aggregate soil condition and to monitor remediation progress and returns on investments. Depending on variations in economic/ecological risks and risk preferences, the RAL’s might/would vary over space and time.
 
-Machine Learning models based on six algorithms including Partial Least Squares (Mevik et al. 2016), Elastic Net (Friedman et al. 2010), Random Forests (Liaw & Wiener 2002), Generalized Boosting (Ridgeway 2015), Cubist (Kuhn et al. 2016a) and Bayesian Additive Regression Trees (Kapelner & Bleich 2016) were stacked to produce new ensemble predictions for extractable soil nutrients, soil organic carbon and total nitrogen based on low cost Alpha-MIR measurements.
+Machine Learning models based on six algorithms including Partial Least Squares (Mevik et al. 2016), Elastic Net (Friedman et al. 2010), Random Forests (Liaw & Wiener 2002), Generalized Boosting (Ridgeway 2015), Cubist (Kuhn et al. 2016a) and Bayesian Additive Regression Trees (Kapelner & Bleich 2016) were stacked to produce new ensemble predictions for extractable soil nutrients, soil organic carbon and total nitrogen based on low cost Alpha-MIR measurements. The following is the basic data setup.
 
+```{r}
+# install.packages(c("downloader","compositions"), dependencies=T)
+suppressPackageStartupMessages({
+  require(downloader)
+  require(compositions)
+})
+rm(list = ls())
+
+# Data setup --------------------------------------------------------------
+# Create a data folder in your current working directory
+dir.create("alpha_data", showWarnings=F)
+setwd("./alpha_data")
+dir.create("Results", showWarnings = F)
+
+# Download
+download("https://osf.io/ut7ya?raw=1", "alpha_ref_data.zip", mode="wb")
+unzip("alpha_ref_data.zip", overwrite=T)
+wet <- read.table("wet.csv", header=T, sep=",") ## pH, EC, Hp, C, N & M3 data
+vars <- c("SSID","pH","Hp","Ca","Mg")
+lreq <- na.omit(wet[vars])
+lreq$Hpa <- ifelse(lreq$pH >= 7.0, 0.0, lreq$Hp*10) ## adjusts Hp to meq/100 gm for lime requirement calcs
+lreq$camg <- lreq$Ca/lreq$Mg ## calculates Ca:Mg ratio based on Mehlich-3 measurements
+vars <- c("SSID","C","N","P","K","S","Ca","Mg","Na","Fe","Mn","Cu","Zn")
+wet <- na.omit(wet[vars])
+alpha <- read.table("alpha.csv", header=T, sep=",") ## Alpha ZnSe spectral data
+
+# Hp vs pH plot
+par(pty="s")
+par(mfrow=c(1,1), mar=c(5,5,1,1))
+plot(I(Hp*10)~pH, xlab="pH (in water)", ylab="Hp (meq/100g)", cex.lab=1.3, 
+     xlim=c(4,10), ylim=c(0,50), lreq)
+abline(h=2.0, col="red", lwd=2) ## Hp detection limit
+abline(v=6.5, col="blue", lwd=2) ## remdiation action level
+
+# Compositional data analysis setup ---------------------------------------
+vars <- c("C","N","P","K","S","Ca","Mg","Na","Fe","Mn","Cu","Zn")
+wet$Fv <- 1000000-rowSums(wet[vars]) ## calculates "fill value" (Fv), in mg/kg soil
+
+# Centered log ratio (clr) transform
+vars <- c("C","N","P","K","S","Ca","Mg","Na","Fe","Mn","Cu","Zn","Fv")
+nbal <- wet[vars]
+nbal <- as.data.frame(clr(nbal)) ## centered log ratio (clr) transform
+nbal <- cbind(wet$SSID, nbal)
+colnames(nbal)[colnames(nbal)=="wet$SSID"] <- "SSID"
+
+# Alpha principal components ----------------------------------------------
+alpha.pca <- prcomp(alpha[,2:1715], center=T, scale=T)
+screeplot(alpha.pca)
+pcas <- predict(alpha.pca, alpha)
+pcas <- pcas[,1:20]
+
+# Merge & write files -----------------------------------------------------
+alpha <- cbind(alpha, pcas)
+lreq <- merge(lreq, alpha, by="SSID")
+nbal <- merge(nbal, alpha, by="SSID")
+write.csv(lreq, "./Results/lreq_2019.csv", row.names=F)
+write.csv(nbal, "./Results/nbal_2019.csv", row.names=F)
+```
