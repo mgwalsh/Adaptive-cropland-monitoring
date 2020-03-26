@@ -114,3 +114,6 @@ w <- leaflet() %>%
 w ## plot widget 
 saveWidget(w, 'OCP_trials.html', selfcontained = T) ## save widget
 ```
+
+## Central-Nigeria Small Area Estimates (Maize yield under different treatments)
+
