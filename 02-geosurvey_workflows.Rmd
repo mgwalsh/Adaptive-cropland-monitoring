@@ -542,7 +542,6 @@ There are only a few limits on the number of currently available ML algorithms t
 
 
 
-
 ```{r}
 # Model stacking setup ----------------------------------------------------
 preds <- stack(1-gl1.pred, 1-gl2.pred, 1-rf.pred, 1-gb.pred, 1-nn.pred)
