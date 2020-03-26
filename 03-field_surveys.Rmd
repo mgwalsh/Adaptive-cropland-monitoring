@@ -4,7 +4,7 @@
 
 ## Introduction {#FS-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys and sample collections. This is the practical side-of-things, which gets field observations and physical samples assembled in a consistent manner. 
+This chapter illustrates procedures for organizing and conducting field surveys and sample collections. This is the practical side-of-things, which gets field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled in a consistent manner. 
 
 ## Setting up a field sampling plan {#sampling-plan}
 
