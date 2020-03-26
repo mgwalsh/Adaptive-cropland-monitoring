@@ -4,11 +4,11 @@
 
 ## Introduction {#FS-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys and monitoring activities.
+This chapter illustrates procedures for organizing and conducting field surveys and sample collections. This is the practical side-of-things, which gets field observations and physical samples assembled in a consistent manner. 
 
 ## Setting up a field sampling plan {#sampling-plan}
 
-This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy.  A geograhically consistent sampling frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. The following provides an example that is based on the expressed need for sampling cropland survey areas in Tanzania by the Tanzania Agricultural Research Institute (TARI).
+This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy. A geograhically consistent sampling frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. The following provides an example that is based on the expressed need for sampling cropland survey areas in Tanzania by the Tanzania Agricultural Research Institute (TARI).
 
 ```{r}
 suppressPackageStartupMessages({
@@ -23,8 +23,7 @@ suppressPackageStartupMessages({
 
 ```{r}
 # Data setup --------------------------------------------------------------
-# create a data folder in your current working directory
-dir.create("TZ_sample", showWarnings=F)
+\dir.create("TZ_sample", showWarnings=F)
 
 # download & stack cropland probability/mask & distance to "major roads" grids
 download("https://www.dropbox.com/s/83qwr9stamkrqfi/TZ_sample_grids.zip?raw=1", "TZ_sample_grids.zip", mode="wb")
