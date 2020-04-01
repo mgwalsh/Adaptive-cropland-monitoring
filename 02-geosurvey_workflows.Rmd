@@ -1,6 +1,6 @@
 # GeoSurvey prediction workflows {#geosurvey}
 
-*Edited by: Markus Walsh, William Wu, Jiehua Chen, ... ?*
+*Edited by: Markus Walsh, William Wu, Jiehua Chen, Barbara Walsh, ... ?*
 
 We gratefully acknowledge the team at [**QED**](https://qed.ai/), who built, maintain and continuously improve the [**GeoSurvey**](https://geosurvey.qed.ai/) App.
 
@@ -29,7 +29,7 @@ In order to monitor changing landscapes the first three steps should be repeated
 
 ## Data wrangling {#geosurvey_step1}
 
-Assembling analysis-ready dataframes is typically a major task that can take an inordinate amount of a data scientist's time and effort both inside and outside of the actual prediction workflows (e.g., for covariate image and GIS pre-processing and data vetting). Data providers are usually encouraged to provide *"clean"* datasets. While GeoSurvey does the *"clean bits"* pretty much automatically, in some instances the veracity of the observations, particularly from crowd-sourced data collections, should be thoroughly quality checked by GeoSurvey administrators. There is an example script for doing that at: [**Input screening**](https://github.com/mgwalsh/Geosurvey/blob/master/GS_input_screening.R).
+Assembling analysis-ready dataframes is typically a major task that can take an inordinate amount of a data scientist's time and effort both inside and outside of the actual prediction workflows (e.g., for covariate image and GIS pre-processing and data vetting). Data providers are usually encouraged to provide *"clean"* datasets. While GeoSurvey does the *"clean / tidy bits"* pretty much automatically, in some instances the veracity of the observations, particularly from crowd-sourced data collections, should be thoroughly quality checked by GeoSurvey administrators. There is an example script for doing that at: [**Input screening**](https://github.com/mgwalsh/Geosurvey/blob/master/GS_input_screening.R).
 
 We will use the following R packages to assemble a dataframe for Tanzania as an example of a typical data wrangling workflow:
 
@@ -72,7 +72,7 @@ grids <- stack(glist)
 
 ### Spatial covariates (grids) {#spatial-covariates}
 
-People ask what are all the spatial covariates that are used in the various predictions and where do they come from? These keep changing these as we get access to new open spatial data. However, the covariates often represent long-term averages and/or fairly slow geospatial variables, which are periodically updated as warranted. For Tanzania these currently include:
+People ask what are all the spatial covariates that are used in the various predictions and where do they come from? These keep changing these as we obtain access to new open spatial data. However, the covariates often represent long-term average remote sensing measurements and/or other fairly slow geospatial variables, which are periodically updated as warranted. For Tanzania they currently include:
 
 1. Climate related variables from e.g., [**CHELSA**](http://chelsa-climate.org/downloads/)
     - long-term mean temperature and precipitation 
@@ -226,7 +226,7 @@ wordcloud(gscon$Var1, freq = gscon$Freq, scale = c(4,0.1), random.order = T)
 
 ## Spatial prediction using ensemble machine learning {#geosurvey_step2}
 
-We now turn to the prediction part of the GeoSurvey workflow. Many data scientists have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuracies. Our schema for this is shown in Fig. \@ref(fig:GS_workflow).
+We now turn to the prediction part of the GeoSurvey workflow. Many data scientists have their favorite algorithm(s) for predicting the types geospatial data that GeoSurvey produces. Also many new algorithms are being developed. The notion of there being potentially many *"favorite"*, new algorithms supports our notion that we might be able use some sort of a combination of those (favorites) to derive a weighted (*"ensemble"*) prediction at the end of the validation process. This is akin to using multiple experts in generating the predictions and then weighing those predictions based on their respective accuracies. Our schema for this is shown in Fig. \@ref(fig:GS_workflow).
 
 ```{r GS_workflow, echo=FALSE, fig.cap="Generalized GeoSurvey prediction workflow", fig.align="center", out.width = '90%'}
 knitr::include_graphics("figures/geosurvey_prediction_workflow.png")
@@ -631,7 +631,7 @@ w ## plot widget
 saveWidget(w, 'TZ_CP_2018.html', selfcontained = T) ## save html ... change feature names here
 ```
 
-## Small Area Estimates (SAE) {#geosurvey_sae}
+## Small Area Estimates (SAE) {#gs_sae}
 
 In this section we show how to use GeoSurvey data and predictions for small area estimation of cropland area proportions and building densities.
 
@@ -713,6 +713,7 @@ writeRaster(gspreds, filename="./Results/TZ_cp_sae.tif", datatype="FLT4S", optio
 ```
 
 
+```{r}
 # Small area estimates (SAE)
 # post-stratified by admin units
 summary(m3 <- glmer(cbind(ccount, 16-ccount) ~ 1 + (1|region), family=binomial, saedat))
@@ -774,5 +775,5 @@ sae <- as.data.frame(cbind(ran$region, ses$region)) ## region-level small area e
 colnames(sae) <- c("ran","se")
 coefplot(ran$region[,1], ses$region[,1], varnames=nam, xlim=c(-1,1), CI=2, main="") ## region coefficient plot
 write.csv(sae, "./Results/TZ_bcount_sae.csv", row.names = F)
-
+```
 
