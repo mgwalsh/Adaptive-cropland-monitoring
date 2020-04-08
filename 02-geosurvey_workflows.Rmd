@@ -1,6 +1,6 @@
 # GeoSurvey prediction workflows {#geosurvey}
 
-*Edited by: Markus Walsh, William Wu, Jiehua Chen, Barbara Walsh, ... ?*
+*Edited by: Markus Walsh, ... ?*
 
 We gratefully acknowledge the team at [**QED**](https://qed.ai/), who built, maintain and continuously improve the [**GeoSurvey**](https://geosurvey.qed.ai/) App.
 
