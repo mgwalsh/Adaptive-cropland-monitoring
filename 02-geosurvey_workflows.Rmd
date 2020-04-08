@@ -27,7 +27,7 @@ The intent of the chapter is to describe starter code for predictive mapping and
 
 In order to monitor changing landscapes the first three steps should be repeated over time; i.e., to facilitate step 4. The end of this chapter gives some suggestions on as to how to do just that, though we cannot generate a fully-worked example of space-time land cover predictions at this point in time. 
 
-## Data wrangling {#geosurvey_step1}
+## Data wrangling {#gs_step1}
 
 Assembling analysis-ready dataframes is typically a major task that can take an inordinate amount of a data scientist's time and effort both inside and outside of the actual prediction workflows (e.g., for covariate image and GIS pre-processing and data vetting). Data providers are usually encouraged to provide *"clean"* datasets. While GeoSurvey does the *"clean / tidy bits"* pretty much automatically, in some instances the veracity of the observations, particularly from crowd-sourced data collections, should be thoroughly quality checked by GeoSurvey administrators. There is an example script for doing that at: [**Input screening**](https://github.com/mgwalsh/Geosurvey/blob/master/GS_input_screening.R).
 
@@ -110,7 +110,7 @@ knitr::include_graphics("figures/spatial_covariate_examples.png")
   
 ### Assemble all of the data {#assemble-data}
 
-The chunk below assembles the GeoSurvey and gridded data. It includes total building counts and cropland proportion estimates based on a grid count (both per 6.25 ha quadrat), and it subsequently combines everything with the gridded variables in a consistent dataframe that can be used for spatial prediction.
+The chunk below assembles the GeoSurvey and gridded data. It subsequently combines everything with the gridded variables in a consistent dataframe that can be used for spatial prediction.
 
 ```{r}
 # attach GADM-L3 admin unit names from shape
@@ -119,50 +119,7 @@ projection(geos) <- projection(shape)
 gadm <- geos %over% shape
 geos <- as.data.frame(geos)
 geos <- cbind(gadm[ ,c(5,7,9)], geos)
-colnames(geos) <- c("region","district","ward","survey","time","id","observer","lat","lon","BP","CP","WP","rice","bloc","cgrid","BIC")
-
-# Coordinates and number of buildings per quadrat -------------------------
-bp <- geos[which(geos$BP == "Y"), ] ## identify quadrats with buildings
-bp$bloc <- as.character(bp$bloc)
-
-# coordinates of tagged building locations from quadrats with buildings
-c <- fromJSON(bp$bloc[1])
-bcoord <- do.call("rbind", c$feature$geometry$coordinates)
-for(i in 2:nrow(bp)) {
-  c <- fromJSON(bp$bloc[i])
-  bcoord_temp <- do.call("rbind", c$feature$geometry$coordinates)
-  bcoord <- rbind(bcoord, bcoord_temp)
-}
-bcoord <- as.data.frame(bcoord) ## vector of coordinates per quadrats with buildings
-colnames(bcoord) <- c("lon","lat")
-
-# number of tagged building locations from quadrats with buildings
-bcount <- rep(NA, nrow(bp))
-for(i in 1:nrow(bp)) {
-  t <- fromJSON(bp$bloc[i])
-  bcount[i] <- nrow(t$features)
-}
-ba <- geos[which(geos$BP == "N"), ]
-ba$bcount <- 0
-bp <- cbind(bp, bcount)
-geos <- rbind(ba, bp)
-geos <- geos[order(geos$id),] ## sort in original sample order
-
-# cropland grid count
-cp <- geos[which(geos$CP == "Y"), ] ## identify quadrats with cropland
-cp$cgrid <- as.character(cp$cgrid)
-
-# number of tagged grid locations from quadrats with cropland
-ccount <- rep(NA, nrow(cp))
-for(i in 1:nrow(cp)) {
-  t <- fromJSON(cp$cgrid[i])
-  ccount[i] <- nrow(t$features)
-}
-ca <- geos[which(geos$CP == "N"), ]
-ca$ccount <- 0
-cp <- cbind(cp, ccount)
-geos <- rbind(ca, cp)
-geos <- geos[order(geos$id),] ## sort in original sample order
+colnames(geos) <- c("region","district","ward","survey","time","id","observer","lat","lon","BP","CP","WP")
 
 # project GeoSurvey coords to grid CRS
 geos.proj <- as.data.frame(project(cbind(geos$lon, geos$lat), "+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs"))
@@ -693,7 +650,7 @@ summary(m0 <- glm(cbind(ccount, 16-ccount) ~ 1, family=binomial, saedat)) ## mea
 
 # with cropland spatial presence prediction (CP18)
 summary(m1 <- glm(cbind(ccount, 16-ccount) ~ CP18, family=binomial, saedat)) ## scaling model
-(est1 <- cbind(Estimate = coef(m1), confint(m1))) ## standard 95% confidence intervals
+(est1 <- cbind(Estimate = coef(m1), confint(m1))) ## 95% confidence intervals
 m1.pred <- predict(grids, m1, type="response")
 plot(m1.pred, axes=F)
 # gsdat$m1 <- predict(m1, gsdat, type="response")
