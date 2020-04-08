@@ -72,7 +72,7 @@ grids <- stack(glist)
 
 ### Spatial covariates (grids) {#spatial-covariates}
 
-People ask what are all the spatial covariates that are used in the various predictions and where do they come from? These keep changing these as we obtain access to new open spatial data. However, the covariates often represent long-term average remote sensing measurements and/or other fairly slow geospatial variables, which are periodically updated as warranted. For Tanzania they currently include:
+People ask what are all the spatial covariates that are used in the various predictions and where do they come from? There is no simple answer to this question as the variables keep changing as we obtain access to new open spatial data. However, the covariates often represent long-term average remote sensing measurements and/or other fairly slow geospatial variables, which are periodically updated as warranted. For Tanzania they currently include:
 
 1. Climate related variables from e.g., [**CHELSA**](http://chelsa-climate.org/downloads/)
     - long-term mean temperature and precipitation 
@@ -138,7 +138,7 @@ gsdat$observer <- sub("@.*", "", as.character(gsdat$observer)) ## shortens obser
 
 ### GeoSurvey dataframe {#dataframe}
 
-The main end product of all of this wrangling (\@ref(geosurvey_step1) is a R dataframe called `gsdat` which contains the various GeoSurvey quadrat observations as well the colocated gridded measurements and their corresponding administrative boundaries from [**GADM**](https://gadm.org/data.html). You can look at the overall structure of this file with:
+The main end product of all of this wrangling (\@ref(geosurvey_step1) is a R dataframe called `gsdat` which contains the various GeoSurvey quadrat observations as well the collocated gridded measurements and their corresponding administrative boundaries from [**GADM**](https://gadm.org/data.html). You can look at the overall structure of this file with:
 
 ```{r}
 str(gsdat)
@@ -292,7 +292,7 @@ hsp_data[,5] <- ifelse(hsp_data$User%in%nosample_HSP|hsp_data[,5]=="Don't Know",
 nrow(hsp_data)
 ```
 
-In practice, we now monitor GeoSurveyor observations from within GeoSurvey itself in near-real-time. So the previous section is a bit of an aside. However, it does demostrate how labeling might be controlled and adjusted statistically with a simple generalized linear [**Mixed-effects model**](https://en.wikipedia.org/wiki/Mixed_model).
+In practice, we now monitor GeoSurveyor observations from within GeoSurvey itself in near-real-time. So the previous section is a bit of an aside. However, it does demonstrate how labeling might be controlled and adjusted statistically with a simple generalized linear [**Mixed-effects model**](https://en.wikipedia.org/wiki/Mixed_model).
 
 ### Model calibration {#calibration}
 
@@ -495,9 +495,9 @@ saveRDS(nn, "./Results/nn.rds")
 
 There are only a few limits on the number of currently available ML algorithms that could be tuned to the prediction task at hand. We restrict those to our favorites in this context (bagging, boosting & neural networks), but there is no reason why you can't or shouldn't explore others e.g., various Bayesian methods come to mind, though they tend to be computationally expensive.
 
-### Model stacking and validation {#ML_stacking}
+### Model stacking and validation {#gs_stacking}
 
-
+This section covers the general stacking process that we use. *"Stacking"* just means combining the various models that we ran during the calibration step into a single label prediction. This combined model is evaluated against previously unseen (validation) data to weight individual models and to ascertain accuracy against an independent validation set.
 
 ```{r}
 # Model stacking setup ----------------------------------------------------
