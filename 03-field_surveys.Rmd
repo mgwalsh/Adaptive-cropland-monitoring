@@ -4,11 +4,13 @@
 
 ## Introduction {#FS-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys and physical sample collections. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in a consistent manner, which can be analyzed. Because field survey activities are expensive, but also because of their particulary high value to any subsequent analyses it is very important to plan and execute these carefully. 
+This chapter illustrates procedures for organizing and conducting field surveys and physical sample collections. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in a consistent manner. Because field survey activities are expensive, but also because of their particulary high value to any subsequent analyses it is very important to plan and execute these carefully. 
 
 ## Setting up a field sampling plan {#sampling-plan}
 
 This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy. A geograhically consistent sampling frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. The following provides an example that is based on the expressed need for sampling cropland survey areas in Tanzania by the Tanzania Agricultural Research Institute (TARI).
+
+Having deﬁned an ROI, field sample locations were selected with every 500-m grid node within the sampling frame allocated an equal prior inclusion probability. This was done using the lcube package from the BalancedSampling library for the R platform (R Core Team, 2017; Grafström and Lisic, 2016). This implements the cube method of Deville and Tillé (2004), which allows one to sample honouring speciﬁed inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates. In this case sample sites were selected for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame) and spatial spread (which ensures that the observations are spread out rather than clustered with respect to spatial coordinates), see Grafström and Schelin (2014).
 
 ```{r}
 suppressPackageStartupMessages({
@@ -23,7 +25,7 @@ suppressPackageStartupMessages({
 
 ```{r}
 # Data setup --------------------------------------------------------------
-\dir.create("TZ_sample", showWarnings=F)
+dir.create("TZ_sample", showWarnings=F)
 
 # download & stack cropland probability/mask & distance to "major roads" grids
 download("https://www.dropbox.com/s/83qwr9stamkrqfi/TZ_sample_grids.zip?raw=1", "TZ_sample_grids.zip", mode="wb")
