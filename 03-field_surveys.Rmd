@@ -2,17 +2,17 @@
 
 *Edited by: Markus Walsh ... ?*
 
-*..., who lost their lives during a tragic incident while on field survey in ... are gratefully acknowledged for both their contributions and their sacrifice ...*
-
 ## Introduction {#FS-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys as well as physical (soil, plant and livestock) sample collections and their curations. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in an efficient and consistent manner. Because field survey activities are expensive, but also because of their particulary high value to any subsequent analyses, it is very important to plan and execute these activities carefully. We can think of field surveys, monitoring and experiments as occurring in 5-steps.
+This chapter illustrates procedures for organizing and conducting field surveys as well as physical (soil, plant and livestock) sample collections and their physical curation. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in an efficient and consistent manner. Because field survey activities are expensive, but also because of their particulary high value to any subsequent analyses, it is very important to plan and execute these activities carefully. We can think of field surveys, monitoring and experiments as occurring in 5-steps.
 
 1. Delineation of a region of interest.
-2. Drawing a spatially representative sample of locations from within the ROI, considering field crew safety factors first-and-foremost.
-3. Setting up of standard field observation and measurement schema that work digitally.
+2. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors first-and-foremost.
+3. Setting up of standard field observation and measurement protocols that work digitally.
 4. Conducting the field sampling and collecting the needed georeferenced physical samples or monitoring data.
 5. Sample processing and curation.
+
+The associated activities essentially have to be carried out in sequence, but the actual procedures can be adjusted or changed over time as different monitoring priorities emerge.
 
 ## Setting up a field sampling plan {#sampling-plan}
 
@@ -45,7 +45,7 @@ unzip("TZA_adm3.zip", overwrite=T)
 shape <- shapefile("TZA_adm3.shp")
 ```
 
-Next is the sample frame setup and a definition of the ROI, which can be changed as needed. Note that apart from the cropland area mask, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics associated with collecting field samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific coverage reuirements. For example, one could also use additional constraint variables where needed.    
+Next is the sample frame setup and a definition of the ROI, which can be changed as needed. Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics associated with collecting field samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. For example, one could also use additional constraint variables where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
@@ -63,7 +63,7 @@ index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
 ```
 
-This chunk then performs the steps of drawing
+The following chunk then performs the steps of drawing a spatially (geographically) balanced sample. 
 
 ```{r}
 # Geographically balanced sampling ----------------------------------------
