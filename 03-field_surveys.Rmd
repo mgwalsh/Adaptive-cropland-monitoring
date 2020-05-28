@@ -2,15 +2,23 @@
 
 *Edited by: Markus Walsh ... ?*
 
+*..., who lost their lives during a tragic incident while on field survey in ... are gratefully acknowledged for both their contributions and their sacrifice ...*
+
 ## Introduction {#FS-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys and physical sample collections. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in a consistent manner. Because field survey activities are expensive, but also because of their particulary high value to any subsequent analyses it is very important to plan and execute these carefully. 
+This chapter illustrates procedures for organizing and conducting field surveys as well as physical (soil, plant and livestock) sample collections and their curations. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in an efficient and consistent manner. Because field survey activities are expensive, but also because of their particulary high value to any subsequent analyses, it is very important to plan and execute these activities carefully. We can think of field surveys, monitoring and experiments as occurring in 5-steps.
+
+1. Delineation of a region of interest.
+2. Drawing a spatially representative sample of locations from within the ROI, considering field crew safety factors first-and-foremost.
+3. Setting up of standard field observation and measurement schema that work digitally.
+4. Conducting the field sampling and collecting the needed georeferenced physical samples or monitoring data.
+5. Sample processing and curation.
 
 ## Setting up a field sampling plan {#sampling-plan}
 
-This section describes setting up field sampling plan that provides reasonable spatial coverage over any given landscape or *"region of interest"* (ROI). This is a critical step, because it determines both the main costs of any adaptive monitoring program as well as its precision and accuracy. A geograhically consistent sampling frame in defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. The following provides an example that is based on the expressed need for sampling cropland survey areas in Tanzania by the Tanzania Agricultural Research Institute (TARI).
+This section describes setting up field sampling plan that provides representative spatial coverage over any given landscape or *"region of interest"* (ROI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. 
 
-Having deﬁned an ROI, field sample locations were selected with every 500-m grid node within the sampling frame allocated an equal prior inclusion probability. This was done using the lcube package from the BalancedSampling library for the R platform (R Core Team, 2017; Grafström and Lisic, 2016). This implements the cube method of Deville and Tillé (2004), which allows one to sample honouring speciﬁed inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates. In this case sample sites were selected for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame) and spatial spread (which ensures that the observations are spread out rather than clustered with respect to spatial coordinates), see Grafström and Schelin (2014).
+A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, and encompasses the national area of Tanzania in which croplands are predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...).
 
 ```{r}
 suppressPackageStartupMessages({
@@ -21,9 +29,7 @@ suppressPackageStartupMessages({
   require(leaflet)
   require(htmlwidgets)
 })
-```
 
-```{r}
 # Data setup --------------------------------------------------------------
 dir.create("TZ_sample", showWarnings=F)
 
@@ -39,6 +45,8 @@ unzip("TZA_adm3.zip", overwrite=T)
 shape <- shapefile("TZA_adm3.shp")
 ```
 
+Next is the sample frame setup and a definition of the ROI, which can be changed as needed. Note that apart from the cropland area mask, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics associated with collecting field samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific coverage reuirements. For example, one could also use additional constraint variables where needed.    
+
 ```{r}
 # Sample setup ------------------------------------------------------------
 # create a ROI image based on cropland mask and distance to nearest main roads
@@ -53,7 +61,11 @@ coord <- coordinates(roi)
 index <- extract(roi, coord)
 index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
+```
 
+This chunk then performs the steps of drawing
+
+```{r}
 # Geographically balanced sampling ----------------------------------------
 # set sampling parameters
 N <- nrow(rmask) ## population size (in 250 m pixels)
