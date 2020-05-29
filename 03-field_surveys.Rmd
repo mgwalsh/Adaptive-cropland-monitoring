@@ -1,4 +1,4 @@
-# Field surveys and sample collections {#fieldsurveys}
+# Field surveys and sample collections {#field-surveys}
 
 *Edited by: Markus Walsh ... ?*
 
@@ -9,7 +9,7 @@ This chapter illustrates procedures for organizing and conducting field surveys 
 1. Delineation of a region of interest.
 2. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
 3. Setting up of standard field observation and measurement protocols that work digitally.
-4. Conducting the field sampling and collecting the needed georeferenced observations, physical samples or monitoring data.
+4. Conducting the field sampling and collecting the needed georeferenced observations, physical samples and/or monitoring data.
 5. Sample processing and curation.
 
 The associated activities essentially have to be carried out in sequence, but the actual procedures can certainly be adjusted or changed over time as different monitoring priorities emerge. This chapter covers those 5 needed steps, including example data, R-code and the relevant links to external resources.
@@ -45,7 +45,7 @@ unzip("TZA_adm3.zip", overwrite=T)
 shape <- shapefile("TZA_adm3.shp")
 ```
 
-Next is the sample frame setup and a working definition of the ROI, which can be changed as needed. Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics associated with collecting field samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. For example, one could also use additional constraint variables where needed.
+Next is the sample frame setup and a working definition of the ROI, which can be changed as needed. Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. For example, one could also use additional constraint variables where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
@@ -70,9 +70,9 @@ plot(roi, axes=F, legend=F)
 
 ## Drawing a sampling plan {#samp-plan}
 
-The following chunk then performs the steps of drawing a spatially (geographically) balanced sample from the specified ROI. We have used the `lcube` package from the `BalancedSampling` library in R (R Core Team, 2017; Grafström and Lisic, 2016) to draw the sample here. This implements the cube method of Deville and Tillé (2004), which allows one to sample based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates or constraints. 
+The following chunk then performs the steps of drawing a spatially (geographically) balanced sample from the specified ROI. We use the `lcube` package from the `BalancedSampling` library in R (R Core Team, 2017) to draw a representative sample here. The method implements the cube method of Deville and Tillé (2004), which allows one to sample based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates or constraints. 
 
-In this particular case sample sites were selected for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread (which ensures that the observations are spread out rather than clustered with respect to spatial coordinates), see Grafström and Schelin (2014). The following chunk performs those calculations:
+In this particular case potential sample sites were selected for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread (which ensures that the observations are spread out rather than clustered with respect to spatial coordinates), see Grafström and Schelin (2014). The following chunk performs those calculations:
 
 ```{r}
 # Geographically balanced sampling ----------------------------------------
@@ -87,12 +87,24 @@ B <- cbind(p, rmask[,1], rmask[,2]) ## specifies balancing variables
 rsamp <- cube(p, B)                 ## samples from the ROI/population using the cube method
 ```
 
-The resulting sampling plan can then be plotted in R and/or saved as a zoomable map using the `leaflet` package.
+The sampling coordinates can also be exported as a GPS readable file, which allows survey crews to navigate to the planned locations in the field. It can also be plotted as a zoomable map using the `leaflet` package.
 
 ```{r}
-# plot sample result
-plot(roi, axes=F, legend=F)
-points(rmask[rsamp,1], rmask[rsamp,2], pch=3, col="red", cex=0.3)
+# Write files -------------------------------------------------------------
+# extract sample coordinates
+x <- rmask[rsamp,1]
+y <- rmask[rsamp,2]
+xy <- data.frame(cbind(x,y))
+
+# attach GADM-L3 and above unit names from shape
+coordinates(xy) <- ~x+y
+crs(xy) <- "+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs"
+sloc <- spTransform(xy, CRS(proj4string(shape)))
+gadm <- sloc %over% shape
+sloc <- as.data.frame(sloc)
+samp <- cbind(gadm[ ,c(5,7,9)], sloc)
+colnames(samp) <- c("Region", "District", "Ward", "Lon", "Lat")
+write.csv(samp, "TZ_fsamp.csv", row.names = F)
 
 # Sampling map widget -----------------------------------------------------
 # render map
@@ -105,28 +117,7 @@ w ## plot widget
 saveWidget(w, 'TZ_sample.html', selfcontained = T)
 ```
 
-The sampling coordinates can also be exported as a GPS readable file, which allows survey crews to navigate to the specified locations in the field.
-
-```{r}
-# Write files -------------------------------------------------------------
-# extract sample coordinates
-x <- rmask[rsamp,1]
-y <- rmask[rsamp,2]
-xy <- data.frame(cbind(x,y))
-# write.csv(xy, "xy.csv", row.names = F)
-
-# attach GADM-L3 and above unit names from shape
-coordinates(xy) <- ~x+y
-crs(xy) <- "+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs"
-sloc <- spTransform(xy, CRS(proj4string(shape)))
-gadm <- sloc %over% shape
-sloc <- as.data.frame(sloc)
-samp <- cbind(gadm[ ,c(5,7,9)], sloc)
-colnames(samp) <- c("Region", "District", "Ward", "Lon", "Lat")
-write.csv(samp, "TZ_sample.csv", row.names = F)
-```
-
-
+Note that most field survey crews will need to be trained in GPS navigation prior to departing for surveys. However, the training can be usually be in a single day for multiple crews.
 
 ## Setting up of standard field observation and measurement protocols {#om-protocols}
 
