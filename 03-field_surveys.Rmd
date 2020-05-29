@@ -4,7 +4,7 @@
 
 ## Introduction {#FS-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys as well as physical (soil, plant and livestock) sample collections and their physical curation. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in an efficient and consistent manner. Field survey activities are expensive, but also but also have particulary high value to any subsequent analyses. So, it is very important to plan and execute these activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 5 sequential steps:
+This chapter illustrates procedures for organizing and conducting field surveys as well as physical (soil, plant and livestock) sample collections and their physical curation. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in an efficient and consistent manner. Field survey activities are expensive, but also but also have particulary high value to any subsequent analyses. So, it is very important to plan and execute these activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 5 steps:
 
 1. Delineation of a region of interest.
 2. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors first-and-foremost.
@@ -18,7 +18,7 @@ The associated activities essentially have to be carried out in sequence, but th
 
 This section describes setting up field sampling plan that provides representative spatial coverage over any given landscape or *"region of interest"* (ROI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives, and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, and encompasses the national area of Tanzania in which croplands are predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...).
+The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, and encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...).
 
 ```{r}
 suppressPackageStartupMessages({
@@ -62,35 +62,52 @@ index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
 ```
 
-This provides a plot of the ROI, and extracts the needed spatial coordinates of the intended sampling frame.
+This provides a plot of the ROI, and extracts the needed spatial coordinates of the intended sampling frame. The ROI can be plotted as an R raster object.
 
 ```{r}
 plot(roi, axes=F, legend=F)
 ```
 
-## The sampling plan
+## Drawing a sampling plan {#samp_plan}
 
-The following chunk then performs the steps of drawing a spatially (geographically) balanced sample from the specified ROI. We have used the `lcube` package from the `BalancedSampling` library in R (R Core Team, 2017; Grafström and Lisic, 2016) to draw the sample here. This implements the cube method of Deville and Tillé (2004), which allows one to sample based on inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates. In this particular case sample sites were selected for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame) and spatial spread (which ensures that the observations are spread out rather than clustered with respect to spatial coordinates), see Grafström and Schelin (2014).
+The following chunk then performs the steps of drawing a spatially (geographically) balanced sample from the specified ROI. We have used the `lcube` package from the `BalancedSampling` library in R (R Core Team, 2017; Grafström and Lisic, 2016) to draw the sample here. This implements the cube method of Deville and Tillé (2004), which allows one to sample based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates or constraints. 
+
+In this particular case sample sites were selected for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread (which ensures that the observations are spread out rather than clustered with respect to spatial coordinates), see Grafström and Schelin (2014). The following chunk performs those calculations:
 
 ```{r}
 # Geographically balanced sampling ----------------------------------------
 # set sampling parameters
 N <- nrow(rmask) ## population size (in 250 m pixels)
-n <- round(N/16*0.1,0) ## set sample size (number of sampling locations)
-p <- rep(n/N,N)  ## inclusion probabilities
+n <- round(N/16*0.1,0) ## set sample size (number of proposed sampling locations)
+p <- rep(n/N,N)  ## calculates the inclusion probabilities
 
 # draw geographically balanced sample
 set.seed(6405)                      ## sets repeatable randomization seed
 B <- cbind(p, rmask[,1], rmask[,2]) ## specifies balancing variables
-rsamp <- cube(p, B)                 ## samples from population
+rsamp <- cube(p, B)                 ## samples from the ROI/population using the cube method
 ```
 
+The resulting sampling plan can then be plotted in R and/or saved as a zoomable map using the `leaflet` package.
 
+```{r}
 # plot sample result
 plot(roi, axes=F, legend=F)
 points(rmask[rsamp,1], rmask[rsamp,2], pch=3, col="red", cex=0.3)
+
+# Sampling map widget -----------------------------------------------------
+# render map
+w <- leaflet() %>% 
+  addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
+  addCircleMarkers(samp$Lon, samp$Lat, clusterOptions = markerClusterOptions())
+w ## plot widget 
+
+# save widget
+saveWidget(w, 'TZ_sample.html', selfcontained = T)
 ```
 
+It can also be exported as a GPS readable file
+
+```{r}
 # Write files -------------------------------------------------------------
 # extract sample coordinates
 x <- rmask[rsamp,1]
@@ -109,17 +126,7 @@ colnames(samp) <- c("Region", "District", "Ward", "Lon", "Lat")
 write.csv(samp, "TZ_sample.csv", row.names = F)
 ```
 
-```{r}
-# Sampling map widget -----------------------------------------------------
-# render map
-w <- leaflet() %>% 
-  addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
-  addCircleMarkers(samp$Lon, samp$Lat, clusterOptions = markerClusterOptions())
-w ## plot widget 
 
-# save widget
-saveWidget(w, 'TZ_sample.html', selfcontained = T)
-```
 
 ## Procedures for collecting cropping systems observations
 
