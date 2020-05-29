@@ -2,7 +2,7 @@
 
 *Edited by: Markus Walsh ... ?*
 
-## Introduction {#FS-intro}
+## Introduction {#fs-intro}
 
 This chapter illustrates procedures for organizing and conducting field surveys as well as physical (soil, plant and livestock) sample collections and their physical curation. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in an efficient and consistent manner. Field survey activities are expensive, but also but also have particulary high value to any subsequent analyses. So, it is very important to plan and execute these activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 5 steps:
 
@@ -68,7 +68,7 @@ This provides a plot of the ROI, and extracts the needed spatial coordinates of 
 plot(roi, axes=F, legend=F)
 ```
 
-## Drawing a sampling plan {#samp_plan}
+## Drawing a sampling plan {#samp-plan}
 
 The following chunk then performs the steps of drawing a spatially (geographically) balanced sample from the specified ROI. We have used the `lcube` package from the `BalancedSampling` library in R (R Core Team, 2017; Grafström and Lisic, 2016) to draw the sample here. This implements the cube method of Deville and Tillé (2004), which allows one to sample based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates or constraints. 
 
@@ -105,7 +105,7 @@ w ## plot widget
 saveWidget(w, 'TZ_sample.html', selfcontained = T)
 ```
 
-It can also be exported as a GPS readable file
+The sampling coordinates can also be exported as a GPS readable file, which allows survey crews to navigate to the specified locations in the field.
 
 ```{r}
 # Write files -------------------------------------------------------------
@@ -128,7 +128,7 @@ write.csv(samp, "TZ_sample.csv", row.names = F)
 
 
 
-## Procedures for collecting cropping systems observations
+## Setting up of standard field observation and measurement protocols {#om-protocols}
 
 You will need the following equipment & materials
 
@@ -139,7 +139,7 @@ You will need the following equipment & materials
 5. A 5-liter plastic jerry can for water.
 6. A rope marked with colored tape at 2.82, 4.61 and 5.64 meters.
 7. Sturdy, ~2-3 liter plastic/or paper bags, 2 bags for each soil sample.
-8. Sticky labels, 2 for each soil sample.
+8. Sticky QR code sample labels, 2 for each soil sample.
 
 Before you go into the field:
 *	Install ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
