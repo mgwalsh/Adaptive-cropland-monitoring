@@ -7,12 +7,12 @@
 This chapter illustrates procedures for organizing and conducting field surveys as well as physical (soil, plant and livestock) sample collections and their physical curation. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in an efficient and consistent manner. Field survey activities are expensive, but also but also have particulary high value to any subsequent analyses. So, it is very important to plan and execute these activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 5 steps:
 
 1. Delineation of a region of interest.
-2. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors first-and-foremost.
+2. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
 3. Setting up of standard field observation and measurement protocols that work digitally.
-4. Conducting the field sampling and collecting the needed georeferenced physical samples or monitoring data.
+4. Conducting the field sampling and collecting the needed georeferenced observations, physical samples or monitoring data.
 5. Sample processing and curation.
 
-The associated activities essentially have to be carried out in sequence, but the actual procedures can be adjusted or changed over time as different monitoring priorities emerge. This chapter covers those 5 needed steps, including example data, R-code and the relevant links to external resources.
+The associated activities essentially have to be carried out in sequence, but the actual procedures can certainly be adjusted or changed over time as different monitoring priorities emerge. This chapter covers those 5 needed steps, including example data, R-code and the relevant links to external resources.
 
 ## Delineating a region of interest {#roi}
 
@@ -62,7 +62,7 @@ index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
 ```
 
-This provides a plot of the ROI, and extracts the needed spatial coordinates of the intended sampling frame. The ROI can be plotted as an R raster object.
+This provides a plot of the ROI, and extracts the needed spatial coordinates of the intended sampling frame. The ROI can be plotted as a R raster object.
 
 ```{r}
 plot(roi, axes=F, legend=F)
