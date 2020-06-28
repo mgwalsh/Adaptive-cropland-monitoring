@@ -21,7 +21,7 @@ The associated activities have to be carried out in sequence; but, the actual pr
 
 This section describes setting up field sampling plan that provides representative spatial coverage over any given landscape or *"region of interest"* (ROI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives, and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, which encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...). You'll need the following packages:
+The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, which encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...). You'll need the following R-packages:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -50,6 +50,8 @@ unzip("TZA_adm3.zip", overwrite=T)
 shape <- shapefile("TZA_adm3.shp")
 ```
 
+## Drawing a sampling plan {#samp-plan}
+
 Next is the sample frame setup and a working definition of the region of interest (ROI). Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. One could also use additional constraint variables where needed.
 
 ```{r}
@@ -72,8 +74,6 @@ This provides a plot of the ROI, and extracts the needed spatial coordinates of 
 ```{r}
 plot(roi, axes=F, legend=F)
 ```
-
-## Drawing a sampling plan {#samp-plan}
 
 The following chunk then performs the steps of drawing a spatially (geographically) balanced sample from the specified ROI. We use the `lcube` package from the `BalancedSampling` library in R (R Core Team, 2017) to draw a representative sample here. The method implements the cube method of Deville and Tillé (2004), which allows one to sample based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates or constraints. 
 
