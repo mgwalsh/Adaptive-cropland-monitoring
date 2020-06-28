@@ -4,18 +4,18 @@
 
 ## Introduction {#fs-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys as well as for collecting physical (soil, plant and livestock) samples. This is the practical, field-based side-of-things, which get reliable field observations and physical (rock, soil, plant and/or potentially livestock biomarker) samples that are assembled and databased in a cost efficient and consistent manner. 
+This chapter illustrates procedures for organizing and conducting field surveys as well as for collecting physical (soil, plant and livestock) samples. This is the practical, field-based side-of-things, which provides field observations and physical (rock, soil, plant and/or potentially livestock biomarker) samples that are assembled and databased in a cost efficient and consistent manner. 
 
-Field survey activities are expensive to implement, but also but also have particulary high value for any subsequent analyses. So, it is very important to plan and execute the associated activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 6 sequential steps:
+Field survey activities are fairly expensive to implement, but also but also have particulary high value for any subsequent analyses. So, it is very important to plan and execute the associated activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 6 sequential steps:
 
-1. Delineation of a region of interest.
+1. Delineation of a region of interest (ROI).
 1. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
-1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally e.g. with KoboToolbox.
+1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally with e.g. [KoboToolbox](https://qed.ai/kt/).
 1. Conducting the field sampling and collecting the needed georeferenced observations, physical samples and/or monitoring data.
 1. Sample processing and curation.
-1. Repeating and updating these steps over time.
+1. Finally, repeating and updating these steps over time.
 
-The associated activities have to be carried out in sequence; but, the actual procedures can certainly be changed over time as different survey or monitoring priorities emerge. This chapter covers the 6 needed steps, including example data, R-code and the relevant links to external resources (where needed).
+The associated activities have to be carried out in sequence; but, the actual procedures can certainly be changed as different survey or monitoring priorities emerge. This chapter covers the 6 needed steps, including example data, R-code and the relevant links to external resources (where needed).
 
 ## Delineating a region of interest {#roi}
 
@@ -126,7 +126,7 @@ Note that most field survey crews will need to be trained in GPS navigation prio
 
 ## Setting up of standard field observation and measurement protocols {#om-protocols}
 
-You will need the following equipment & materials
+You will need the following equipment and materials:
 
 1. An Android phone or tablet.
 1. A separate GPS device (optional, but is highly recommended for field navigation).
