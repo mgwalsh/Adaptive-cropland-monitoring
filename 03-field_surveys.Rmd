@@ -1,24 +1,26 @@
-# Field surveys and sample collections {#field-surveys}
+# Field surveys and physical sample collections {#field-surveys}
 
 *Edited by: Markus Walsh ... ?*
 
 ## Introduction {#fs-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys as well as physical (soil, plant and livestock) sample collections and their physical curation. This is the practical, field-based side-of-things, which get field observations and physical (rock, soil, plant and potentially livestock biomarker) samples assembled and databased in an efficient and consistent manner. Field survey activities are expensive, but also but also have particulary high value to any subsequent analyses. So, it is very important to plan and execute these activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 5 steps:
+This chapter illustrates procedures for organizing and conducting field surveys as well as for collecting physical (soil, plant and livestock) samples. This is the practical, field-based side-of-things, which get reliable field observations and physical (rock, soil, plant and potentially livestock biomarker) samples that are assembled and databased in a cost efficient and consistent manner. 
+Field survey activities are expensive to implement, but also but also have particulary high value for any subsequent analyses. So, it is very important to plan and execute the associated activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 6 sequential steps:
 
 1. Delineation of a region of interest.
-2. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
-3. Setting up of standard field observation and measurement protocols that work digitally.
-4. Conducting the field sampling and collecting the needed georeferenced observations, physical samples and/or monitoring data.
-5. Sample processing and curation.
+1. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
+1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally e.g. with Kobo.
+1. Conducting the field sampling and collecting the needed georeferenced observations, physical samples and/or monitoring data.
+1. Sample processing and curation.
+1. Repeating and updating these steps over time.
 
-The associated activities essentially have to be carried out in sequence, but the actual procedures can certainly be adjusted or changed over time as different monitoring priorities emerge. This chapter covers those 5 needed steps, including example data, R-code and the relevant links to external resources.
+The associated activities have to be carried out in sequence; but, the actual procedures can certainly be adjusted or changed over time as different survey or monitoring priorities emerge. This chapter covers the 6 needed steps, including example data, R-code and the relevant links to external resources (where needed).
 
 ## Delineating a region of interest {#roi}
 
 This section describes setting up field sampling plan that provides representative spatial coverage over any given landscape or *"region of interest"* (ROI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives, and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, and encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...).
+The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, and encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...). You'll need the following packages.
 
 ```{r}
 suppressPackageStartupMessages({
@@ -29,10 +31,12 @@ suppressPackageStartupMessages({
   require(leaflet)
   require(htmlwidgets)
 })
+```
 
+The data for running the Tanzania example is available via:
+
+```{r}
 # Data setup --------------------------------------------------------------
-dir.create("TZ_sample", showWarnings=F)
-
 # download & stack cropland probability/mask & distance to "major roads" grids
 download("https://www.dropbox.com/s/83qwr9stamkrqfi/TZ_sample_grids.zip?raw=1", "TZ_sample_grids.zip", mode="wb")
 unzip("TZ_sample_grids.zip", overwrite=T)
@@ -45,7 +49,7 @@ unzip("TZA_adm3.zip", overwrite=T)
 shape <- shapefile("TZA_adm3.shp")
 ```
 
-Next is the sample frame setup and a working definition of the ROI, which can be changed as needed. Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. For example, one could also use additional constraint variables where needed.
+Next is the sample frame setup and a working definition of the region of interest (ROI). Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. For example, one could also use additional constraint variables where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
