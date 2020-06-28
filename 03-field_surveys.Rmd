@@ -4,7 +4,8 @@
 
 ## Introduction {#fs-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys as well as for collecting physical (soil, plant and livestock) samples. This is the practical, field-based side-of-things, which get reliable field observations and physical (rock, soil, plant and potentially livestock biomarker) samples that are assembled and databased in a cost efficient and consistent manner. 
+This chapter illustrates procedures for organizing and conducting field surveys as well as for collecting physical (soil, plant and livestock) samples. This is the practical, field-based side-of-things, which get reliable field observations and physical (rock, soil, plant and/or potentially livestock biomarker) samples that are assembled and databased in a cost efficient and consistent manner. 
+
 Field survey activities are expensive to implement, but also but also have particulary high value for any subsequent analyses. So, it is very important to plan and execute the associated activities carefully. We can think of field surveys, monitoring and/or experiments as occurring in 6 sequential steps:
 
 1. Delineation of a region of interest.
@@ -14,13 +15,13 @@ Field survey activities are expensive to implement, but also but also have parti
 1. Sample processing and curation.
 1. Repeating and updating these steps over time.
 
-The associated activities have to be carried out in sequence; but, the actual procedures can certainly be adjusted or changed over time as different survey or monitoring priorities emerge. This chapter covers the 6 needed steps, including example data, R-code and the relevant links to external resources (where needed).
+The associated activities have to be carried out in sequence; but, the actual procedures can certainly be changed over time as different survey or monitoring priorities emerge. This chapter covers the 6 needed steps, including example data, R-code and the relevant links to external resources (where needed).
 
 ## Delineating a region of interest {#roi}
 
 This section describes setting up field sampling plan that provides representative spatial coverage over any given landscape or *"region of interest"* (ROI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives, and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, and encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...). You'll need the following packages.
+The following provides an example that is based on the need for sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, which encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that cropland occurrence is based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...). You'll need the following packages:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -49,7 +50,7 @@ unzip("TZA_adm3.zip", overwrite=T)
 shape <- shapefile("TZA_adm3.shp")
 ```
 
-Next is the sample frame setup and a working definition of the region of interest (ROI). Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. For example, one could also use additional constraint variables where needed.
+Next is the sample frame setup and a working definition of the region of interest (ROI). Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to major road"* covariate. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in Tanzania. However, one can always change the `rdt` (distance to road) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. One could also use additional constraint variables where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
@@ -128,13 +129,13 @@ Note that most field survey crews will need to be trained in GPS navigation prio
 You will need the following equipment & materials
 
 1. An Android phone or tablet.
-2. A separate GPS device (optional, but is highly recommended for field navigation).
-3. A soil auger marked with colored tape at 20 and 50 cm from the tip.
-4. 2, 20-liter plastic buckets.
-5. A 5-liter plastic jerry can for water.
-6. A rope marked with colored tape at 2.82, 4.61 and 5.64 meters.
-7. Sturdy, ~2-3 liter plastic/or paper bags, 2 bags for each soil sample.
-8. Sticky QR code sample labels, 2 for each soil sample.
+1. A separate GPS device (optional, but is highly recommended for field navigation).
+1. A soil auger marked with colored tape at 20 and 50 cm from the tip.
+1. 2, 20-liter plastic buckets.
+1. A 5-liter plastic jerry can for water.
+1. A rope marked with colored tape at 2.82, 4.61 and 5.64 meters.
+1. Sturdy, ~2-3 liter plastic/or paper bags, 2 bags for each soil sample.
+1. Sticky QR code sample labels, 2 for each soil sample.
 
 Before you go into the field:
 *	Install ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
