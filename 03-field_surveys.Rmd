@@ -1,6 +1,6 @@
 # Field surveys and physical sample collections {#field-surveys}
 
-*Edited by: Markus Walsh ... ?*
+*Edited by: Markus Walsh, Barbara Walsh ... ?*
 
 ## Introduction {#fs-intro}
 
@@ -10,7 +10,7 @@ Field survey activities are expensive to implement, but also but also have parti
 
 1. Delineation of a region of interest.
 1. Drawing a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
-1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally e.g. with Kobo.
+1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally e.g. with KoboToolbox.
 1. Conducting the field sampling and collecting the needed georeferenced observations, physical samples and/or monitoring data.
 1. Sample processing and curation.
 1. Repeating and updating these steps over time.
