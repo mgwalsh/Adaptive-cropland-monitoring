@@ -138,6 +138,7 @@ You shall need the following equipment and materials:
 1. Sticky QR code sample labels, 2 for each soil sample.
 
 Before you go into the field:
+
 *	Install ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
 * ODK Collect (to georeference, time stamp, and log in your soil sample)
 * XZing barcode scanner (to read QR code labels)
