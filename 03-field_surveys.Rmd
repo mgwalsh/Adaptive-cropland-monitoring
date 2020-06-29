@@ -1,6 +1,6 @@
 # Field surveys and physical sample collections {#field-surveys}
 
-*Edited by: Markus Walsh, Barbara Walsh ... ?*
+*Edited by: Markus Walsh, Barbara Walsh, Jordan Chamberlin, ... ?*
 
 ## Introduction {#fs-intro}
 
@@ -8,18 +8,18 @@ This chapter illustrates procedures for organizing and conducting field surveys 
 
 Field survey activities are fairly expensive to implement, but they also have particulary high information value for any subsequent analyses and management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, monitoring and experiments as occurring in 6 sequential and interdependent steps:
 
-1. Delineation of a region of interest (ROI).
+1. Delineation of a geographical Region of Interest (RoI).
 1. Drawing up a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
 1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally with e.g. [KoboToolbox](https://qed.ai/kt/).
 1. Conducting the field sampling and collecting the needed georeferenced observations, physical samples and/or monitoring data.
 1. Sample processing and curation.
-1. Finally, repeat and update the previous 5 steps over time.
+1. Finally, consitently repeat and update the previous 5 steps over time.
 
 The associated activities have to be carried out in sequence. But, the actual procedures can certainly be changed as different survey or monitoring priorities emerge over time. This chapter covers the 6 steps including example data, R-code and the relevant links to external open-source resources.
 
 ## Delineating a region of interest {#roi}
 
-This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"region of interest"* (ROI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives, and constraints of the mapping and monitoring tasks at hand. 
+This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives, and constraints of the mapping and monitoring tasks at hand. 
 
 The following provides an example that is based on the need for physically sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, which encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that both cropland and building occurrences are based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...). You'll need the following R-packages:
 
