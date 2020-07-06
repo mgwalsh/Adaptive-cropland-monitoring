@@ -4,9 +4,9 @@
 
 ## Introduction {#fs-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides field observations and the physical measurements of any (physical) rock, water, soil, plant and potentially livestock fecal (and/or blood) samples, which can be georeferenced, measured, assembled and databased in a consistent manner. 
+This chapter illustrates procedures for organizing and conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides field observations and the physical measurements of any (physical) rock, water, soil, plant and potentially livestock fecal (and/or blood) samples, which can be georeferenced, measured and databased in a consistent manner. 
 
-Field survey activities are fairly expensive to implement, but they also have particulary high information value for any subsequent analyses and management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, monitoring and experiments as occurring in 6 sequential and interdependent steps:
+Field survey activities are fairly expensive to implement, but they also have particulary high information value for any subsequent analyses and cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, monitoring and experiments as occurring in 6 sequential and interdependent steps:
 
 1. Delineation of a geographical Region of Interest (RoI).
 1. Drawing up a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
