@@ -1,21 +1,22 @@
-# Randomized crop management response trials {#mrt}
+# Analyses of randomized management response trials and observational surveys {#mrt}
 
 *Edited by: Jordan Chamberlin, Markus Walsh, ...?*
 
 ## Introduction {#mrt-intro}
 
-Inherently low soil fertility, nutrient imbalances and potentially accelerating soil physical, chemical and biological degradation, are thought to constitute threats to maintaining agricultural productivity and other ecosystem services across Africa's cropland biome. However, at present the geographical extent of existing soil problems in croplands, their location specific trends and opportunities for managing these over time are not known. Some of the key information gaps include:
+Inherently low soil fertility, nutrient imbalances and potentially accelerating soil physical, chemical and biological degradation, are thought to constitute threats to maintaining agricultural productivity and other ecosystem services across Africa's cropland biome. However, at present the geographical extent of existing soil problems in croplands, their location specific trends and opportunities for managing these over time are not known. An ability to track these potential changes and anticipate the attendant consequences requires reliable information about the characteristics and distribution of cropland productivity and the potentials for improvement, given any relevant interventions or pratices. 
 
-* The cropland area and the proportion of arable land that is being used for cultivation has not been adequately identified with sufficient accuracy to allow spatial targeting of appropriate management practices. 
-* Rapidly growing populations in Africa (currently estimated at ~ ?? M, and projected to ~?? M by 2030) will require substantial increases in either agricultural productivity per unit of currently cultivated land area and/or the expansion of cultivated lands to meet food demands.
-* The rate of yield increases in staple cereal crops (e.g., maize, sorghum, rice and other field crops) may be slowing and various soil constraints appear to be one important factor influencing this trend. However, the spatial distribution of these constraints is not known and it is therefore difficult to devise location specific nutrient input and crop management recommendations. 
-* Economically viable and ecologically sustainable nutrient input/import options have not been previously established at sub-national scales or for specific agro-ecologies and landuse systems. As a consequence, blanket fertilizer formulations and other agro-input recommendations are being blindly applied countrywide.
-* Soil degradation reduces agricultural productivity and other ecosystem service deliveries to people. However, the geographical distribution, rates and impacts of important soil degradation processes (e.g. wind and water erosion, organic matter and nutrient depletion, acidification, salinization, alkalization, compaction, loss of below ground biodiversity) are poorly documented and understood. 
-* Water-use efficiency in crop and rangeland production systems is determined in part by soil management. Again, the actual and potential water use efficiencies of agricultural systems in Africa (and elsewhere) are poorly characterized and should be assessed to evaluate e.g. the potential tradeoff’s between needs for agricultural production and the availability of potable water for rapidly growing human populations.
-* Changing climatic conditions may increasingly disrupt current land use systems. The sustainability of these systems will depend on interactions between climate, soil, and land management as well as by the policies that enable or undermine them. 
+The most reliable and informative way of monitoring both the current situation and the potentials is by using [**Randomized Controlled Trials**](https://en.wikipedia.org/wiki/Randomized_controlled_trial) (RCT). However, the main problems with all RCTs is that they are usually logistically difficult and quite expensive to conduct.
 
-An ability to track these potential changes and anticipate the attendant consequences requires reliable information about the characteristics and distribution of cropland productivity and the potentials for improvement, given interventions. One of the most reliable and informative ways of monitoring both the current situation and the potentials is by using [**Randomized Controlled Trials**](https://en.wikipedia.org/wiki/Randomized_controlled_trial) (RCT). However, the main problems with all RCTs is that they are usually logistically difficult and quite expensive to conduct.
+... agricultural development projects carry out regular monitoring and evaluation surveys to gauge impacts or to adjust management interventions where needed. More generally, these are known as [**Observational Surveys**](https://en.wikipedia.org/wiki/Observational_study) that can be applied in various configurations. Although observational surveys cannot be used to make definitive statements of fact about the "effectiveness" of a management practice, they are used to:
 
+provide information on “real world” use and practice;
+detect signals about the benefits and risks of...[the] use [of practices] in the general population;
+help formulate hypotheses to be tested in subsequent experiments;
+provide part of the community-level data needed to design more informative pragmatic clinical trials; and
+inform clinical practice.
+
+These tend to be cheaper than RCTs per unit effort.
 
 ## Nigeria data {#NG-data}
 
@@ -30,11 +31,9 @@ suppressPackageStartupMessages({
   require(leaflet)
   require(htmlwidgets)
 })
+```
 
-# Create a data folder in your current working directory
-dir.create("OCP_data", showWarnings=F)
-setwd("./OCP_data")
-
+```{r}
 # Data downloads -----------------------------------------------------------
 # download IITA/OCP yield data
 download("https://www.dropbox.com/s/hi75cnp3ejr4srk/OCP_trials.zip?raw=1", "OCP_trials.zip", mode = "wb")
@@ -74,7 +73,9 @@ projection(tresp) <- projection(tresp)
 trespgrid <- extract(grids, tresp)
 gsdat <- as.data.frame(cbind(tresp, trespgrid)) 
 # plot(alt~MDEM, gsdat) ## gps altitude/location check against MDEM 
+```
 
+```{r}
 # Classify by site indices ------------------------------------------------
 si.lmer <- lmer(log(tyld)~trt*+(1|sid), gsdat) ## random intercept (site-level) model
 display(si.lmer)
@@ -91,7 +92,7 @@ boxplot(tyld~trt, notch=T, ylab="Cob yield (kg/ha)", ylim=c(0,8000), gsdat) ## t
 boxplot(tyld~sic, notch=T, ylab="Cob yield (kg/ha)", ylim=c(0,8000), gsdat) ## yield differences between site index classes
 boxplot(tcob~trt*sic, notch=T, ylab="Number of cobs", ylim=c(0,800), gsdat) ## treatment differences
 boxplot(tyld~trt*sic, notch=T, ylab="Cob yield (kg/ha)", ylim=c(0,8000), gsdat) ## treatment differences
-plot(tyld~cyld, xlab="Cob yield (kg/ha), circular plot", ylab="Cob yield (kg/ha), total plot", gsdat)
+plot(tyld~cyld, xlab="Maize yield (kg/ha), circular plot", ylab="Maize yield (kg/ha), total plot", gsdat)
 
 # extract gridded variables at trial locations
 si.proj <- as.data.frame(project(cbind(si$lon, si$lat), "+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs"))
@@ -101,6 +102,7 @@ coordinates(si) <- ~x+y
 projection(si) <- projection(tresp)
 sigrid <- extract(grids, si)
 sidat <- as.data.frame(cbind(si, sigrid)) 
+```
 
 # Write data frames -------------------------------------------------------
 dir.create("Results", showWarnings = F)
