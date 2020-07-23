@@ -4,19 +4,13 @@
 
 ## Introduction {#mrt-intro}
 
-Inherently low soil fertility, nutrient imbalances and potentially accelerating soil physical, chemical and biological degradation, are thought to constitute threats to maintaining agricultural productivity and other ecosystem services across Africa's cropland biome. However, at present the geographical extent of existing soil problems in croplands, their location specific trends and opportunities for managing these over time are not known. An ability to track these potential changes and anticipate the attendant consequences requires reliable information about the characteristics and distribution of cropland productivity and the potentials for improvement, given any relevant interventions or pratices. 
+Inherently low soil fertility, nutrient imbalances and potentially accelerating soil physical, chemical and biological degradation, are thought to constitute threats to maintaining agricultural productivity and other ecosystem services across Africa's cropland biome. However, at present the geographical extent of existing soil problems in croplands, their location specific trends and opportunities for managing these over time are not known. 
 
-The most reliable and informative way of assessing the efficacy and impact of management interventions is the use of [**Randomized Controlled Trials**](https://en.wikipedia.org/wiki/Randomized_controlled_trial) (RCT). However, the main problems with all RCTs is that they are usually logistically difficult and quite expensive to conduct.
+An ability to track these potential changes and anticipate the attendant impacts requires reliable spatial information about the characteristics and distribution of cropland productivity and their potentials for improvement, given the relevant interventions and/or existing pratices. 
 
-... agricultural development projects frequently carry out regular monitoring and evaluation surveys to gauge impacts or to adjust management interventions where needed. More generally, these are known as [**Observational Surveys**](https://en.wikipedia.org/wiki/Observational_study) that can be applied in various configurations. Although observational surveys cannot be used to make definitive statements of fact about the "effectiveness" of a management practice, they are used to:
+The most reliable and informative way of evaluating the efficacy and impact of management interventions is to use [**Randomized Controlled Trials**](https://en.wikipedia.org/wiki/Randomized_controlled_trial) (RCTs). RCTs compare treatment(s) against at least one common control at the same location. However, the main problems with all RCTs in agriculture is that they are usually logistically difficult and quite expensive to conduct *"at scale"*.
 
-provide information on “real world” use and practice;
-detect signals about the benefits and risks of...[the] use [of practices] in the general population;
-help formulate hypotheses to be tested in subsequent experiments;
-provide part of the community-level data needed to design more informative pragmatic clinical trials; and
-inform clinical practice.
-
-These tend to be cheaper than RCTs per unit effort.
+Agricultural development projects frequently also carry out regular monitoring and evaluation surveys to gauge impacts or to adjust management interventions where needed. More generally, these are known as [**Observational Surveys**](https://en.wikipedia.org/wiki/Observational_study), which can be applied in various configurations. Although observational surveys cannot be used to make definitive statements about the "effectiveness" of a management practice, they are used to provide information on “real world” use and practice and to detect signals about the benefits and risks of the use of those practices. They also tend to be cheaper than RCTs per unit effort.
 
 ## Nigeria data {#NG-data}
 
