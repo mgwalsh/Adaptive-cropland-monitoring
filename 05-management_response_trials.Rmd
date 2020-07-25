@@ -4,15 +4,17 @@
 
 ## Introduction {#mrt-intro}
 
-Inherently low soil fertility, nutrient imbalances and potentially accelerating soil physical, chemical and biological degradation, are thought to constitute threats to maintaining agricultural productivity and other ecosystem services across Africa's cropland biome. However, at present the geographical extent of existing soil problems in croplands, their location specific trends and opportunities for managing these over time are not known. 
+Inherently low soil fertility, nutrient imbalances and potentially accelerating soil physical, chemical and biological degradation, are thought to constitute threats to maintaining agricultural productivity and other ecosystem services across Africa's cropland biome. However, at present the geographical extent of existing production problems in croplands, their location specific trends and opportunities for managing these over time are not known. 
 
-An ability to track these potential changes and anticipate the attendant impacts requires reliable spatial information about the characteristics and distribution of cropland productivity and their potentials for improvement, given the relevant interventions and/or existing pratices. 
+An ability to track changes and anticipate the attendant impacts requires reliable spatial information about the characteristics and distribution of cropland productivity and their potentials for improvement, in context of the relevant interventions and/or existing practices. 
 
-The most reliable and informative way of evaluating the efficacy and impact of management interventions is to use [**Randomized Controlled Trials**](https://en.wikipedia.org/wiki/Randomized_controlled_trial) (RCTs). RCTs compare treatment(s) against at least one common control at the same location. However, the main problems with all RCTs in agriculture is that they are usually logistically difficult and quite expensive to conduct *"at scale"*.
+The most reliable and informative way of evaluating the efficacy and impact of management interventions is to use [**Randomized Controlled Trials**](https://en.wikipedia.org/wiki/Randomized_controlled_trial) (RCTs). RCTs compare interventions(s) against at least one common control at the same location and time. *"Randomized"* in this context simply means having multiple individual locations (sometimes hundreds or even thousands) that are subjected to the same control and intervention arms and that those locations are selected randomly from within a given region of interest (ROI). The main problems with all RCTs in agriculture is that they are usually logistically difficult and quite expensive to conduct *"at scale"*. RCTs at scale typically require moving toward collaborative working approaches and models. One of the potential advantages of this is the ability to build on the strengths of common data collection and analysis protocols and to share workloads.
 
-Agricultural development projects frequently also carry out regular monitoring and evaluation surveys to gauge impacts or to adjust management interventions where needed. More generally, these are known as [**Observational Surveys**](https://en.wikipedia.org/wiki/Observational_study), which can be applied in various configurations. Although observational surveys cannot be used to make definitive statements about the "effectiveness" of a management practice, they are used to provide information on “real world” use and practice and to detect signals about the benefits and risks of the use of those practices. They also tend to be cheaper than RCTs per unit effort.
+Agricultural development projects also frequently carry out regular monitoring and evaluation surveys to gauge impacts or to adjust management interventions where needed. More generally, these are known as [**Observational Surveys**](https://en.wikipedia.org/wiki/Observational_study), which can be applied in various configurations. Although observational surveys generally cannot be used to make definitive statements about the *"effectiveness"* of a management practice, they are used to provide information on *“real world”* use and to detect signals about where the benefits and risks of using of those practices occur in agricultural landscapes. They also tend to be much cheaper than RCTs per unit effort.
 
-## Nigeria data {#NG-data}
+This chapter provides worked examples of both RCTs and Observational Surveys.
+
+## Nigeria fertilizer response data {#NG-data}
 
 ```{r}
 # install.packages(c("downloader","rgdal","raster","arm","leaflet","htmlwidgets")), dependencies=TRUE)
@@ -77,7 +79,7 @@ si.ran <- ranef(si.lmer) ## extract random effects
 si <- as.data.frame(rownames(si.ran$sid))
 si$si <- si.ran$sid[,1]
 colnames(si) <- c("sid","si")
-si$sic <- ifelse(si$si > 0, "A", "B") ## classify above/below average site indices (sic = A/B)
+si$sic <- ifelse(si$si > 0, "A", "B") ## classify above/below average site indices (sic = A or B)
 gsdat <- merge(gsdat, si, by="sid")
 si <- merge(si, sites, by="sid")
 
@@ -98,11 +100,14 @@ sigrid <- extract(grids, si)
 sidat <- as.data.frame(cbind(si, sigrid)) 
 ```
 
+```{r}
 # Write data frames -------------------------------------------------------
 dir.create("Results", showWarnings = F)
 write.csv(gsdat, "./Results/OCP_gsdat.csv", row.names = F)
 write.csv(sidat, "./Results/OCP_sidat.csv", row.names = F)
+```
 
+```{r}
 # Yield trial map widget --------------------------------------------------
 w <- leaflet() %>% 
   addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
@@ -111,5 +116,4 @@ w ## plot widget
 saveWidget(w, 'OCP_trials.html', selfcontained = T) ## save widget
 ```
 
-## Central-Nigeria Small Area Estimates (Maize yield under different treatments)
-
+## Western Kenya One Acre Fund monitoring survey {WK-data}
