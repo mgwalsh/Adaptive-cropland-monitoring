@@ -1,10 +1,8 @@
-# Analyses of randomized management response trials and observational surveys {#mrt}
+# Spatial predictions of management responses {#mrt}
 
 *Edited by: Jordan Chamberlin, Markus Walsh, ...?*
 
 ## Introduction {#mrt-intro}
-
-Inherently low soil fertility, nutrient imbalances and potentially accelerating soil physical, chemical and biological degradation, are thought to constitute threats to maintaining agricultural productivity and other ecosystem services across Africa's cropland biome. However, at present the geographical extent of existing production problems in croplands, their location specific trends and opportunities for managing these over time are not known. 
 
 An ability to track changes and anticipate the attendant impacts requires reliable spatial information about the characteristics and distribution of cropland productivity and their potentials for improvement, in context of the relevant interventions and/or existing practices. 
 
