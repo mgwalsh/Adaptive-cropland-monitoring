@@ -1,16 +1,22 @@
-# Spatial predictions of management responses {#mrt}
+# Spatial predictions of cropland management responses {#mrt}
 
 *Edited by: Jordan Chamberlin, Markus Walsh, ...?*
 
 ## Introduction {#mrt-intro}
 
-An ability to track changes and anticipate the attendant impacts requires reliable spatial information about the characteristics and distribution of cropland productivity and their potentials for improvement, in context of the relevant interventions and/or existing practices. 
+An ability to track management changes and anticipate their attendant impacts requires reliable spatial information about the spatial distribution of cropland productivity and their potentials for improvement.
 
-The most reliable and informative way of evaluating the efficacy and impact of management interventions is to use [**Randomized Controlled Trials**](https://en.wikipedia.org/wiki/Randomized_controlled_trial) (RCTs). RCTs compare interventions(s) against at least one common control at the same location and time. *"Randomized"* in this context simply means having multiple individual locations (sometimes hundreds or even thousands) that are subjected to the same control and intervention arms and that those locations are selected randomly from within a given region of interest (ROI). The main problems with all RCTs in agriculture is that they are usually logistically difficult and quite expensive to conduct *"at scale"*. RCTs at scale typically require moving toward collaborative working approaches and models. One of the potential advantages of this is the ability to build on the strengths of common data collection and analysis protocols and to share workloads.
+The most informative way of evaluating the efficacy and impact of cropland management interventions is to test these in **Multilocation Trials** (MLTs). MLTs compare interventions(s) against at least one common control, at the same geographical location and point in time. *"Multilocation"* in this context simply means having multiple individual locations (sometimes hundreds) that are subjected to the same controls and interventions that are selected randomly from within a given geographical region of interest (ROI). Data collected in multilocation trials are complex and have three fundamental aspects:
 
-Agricultural development projects also frequently carry out regular monitoring and evaluation surveys to gauge impacts or to adjust management interventions where needed. More generally, these are known as [**Observational Surveys**](https://en.wikipedia.org/wiki/Observational_study), which can be applied in various configurations. Although observational surveys generally cannot be used to make definitive statements about the *"effectiveness"* of a management practice, they are used to provide information on *“real world”* use and to detect signals about where the benefits and risks of using of those practices occur in agricultural landscapes. They also tend to be much cheaper than RCTs per unit effort.
+1. environmental (space-time) patterns
+2. nonstructural (space-time) noise
+3. relationships among genotypes, management actions and environments.
 
-This chapter provides worked examples of both RCTs and Observational Surveys.
+The main problems with all MLTs in agriculture is that they are usually logistically difficult and quite expensive to conduct *at scale*. MLTs at scale typically require collaborative working approaches and models.
+
+The second scale dependent issue relates to how locations are defined.
+
+This chapter provides ...
 
 ## Nigeria fertilizer response data {#NG-data}
 
