@@ -1,27 +1,34 @@
-# Field surveys and physical sample collections {#field-surveys}
+---
+title: "Field surveys and physical sample collections"
+author: M. G. Walsh
+date: "21/11/2020"
+output: html_document
+---
 
-*Edited by: Markus Walsh, Barbara Walsh, Jordan Chamberlin, ... ?*
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
 
 ## Introduction {#fs-intro}
 
-This chapter illustrates procedures for organizing and conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides field observations and the physical measurements of any (physical) rock, water, soil, plant and potentially livestock fecal (and/or blood) samples, which can be georeferenced, measured and databased in a consistent manner. 
+This notebook illustrates procedures for conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides field observations and the physical measurements of any (physical) rock, water, soil, plant and potentially livestock fecal (and/or blood) samples, which can be georeferenced, measured and databased in a consistent manner.
 
 Field survey activities are fairly expensive to implement, but they also have particulary high information value for any subsequent analyses and cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, monitoring and experiments as occurring in 6 sequential and interdependent steps:
 
 1. Delineation of a geographical Region of Interest (RoI).
-1. Drawing up a spatially representative sample of locations from within the ROI, considering any potential field crew safety factors ... first-and-foremost.
+1. Drawing up a spatially representative sample of locations from within the RoI, considering any potential field crew safety factors ... first-and-foremost!
 1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally with e.g. [KoboToolbox](https://qed.ai/kt/).
 1. Conducting the field sampling and collecting the needed georeferenced observations, physical samples and/or monitoring data.
 1. Sample processing and curation.
-1. Finally, consitently repeat and update the previous 5 steps over time.
+1. Finally, consistently repeating and updating the previous 5 steps over time.
 
-The associated activities have to be carried out in sequence. But, the actual procedures can certainly be changed as different survey or monitoring priorities emerge over time. This chapter covers the 6 steps including example data, R-code and the relevant links to external open-source resources.
+The associated activities should to be carried out in sequence. But, the actual procedures can certainly be changed as different survey or monitoring priorities emerge over time. This chapter covers the 6 steps including example data, R-code and the relevant links to external open-source resources.
 
 ## Delineating a region of interest {#roi}
 
-This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives, and constraints of the mapping and monitoring tasks at hand. 
+This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for physically sampling representative cropland areas in all of Tanzania. The ROI calculations for this example are shown in the chunk below, which encompasses the national area of Tanzania in which cropland is predicted to occur (in 2020). The set up, packages and data needed for this exercise are also found below. Note that both cropland and building occurrences are based on comprehensive GeoSurveys, which were conducted in 2017-2018 (see chapter ...). You'll need the following R-packages:
+The following provides an example that is based on the need for physically sampling representative cropland areas of all of Rwanda. The ROI calculations for this example are shown in the chunk below. Note that cropland occurrences are based on comprehensive GeoSurveys, which were conducted in 2019-2020. The set up, packages and data needed for this exercise are also found below. You'll need the following R-packages to run the example:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -34,11 +41,11 @@ suppressPackageStartupMessages({
 })
 ```
 
-The data for running the Tanzania example is available via:
+The data for running the Rwanda example are accessible via the following chunk:
 
 ```{r}
 # Data setup --------------------------------------------------------------
-# download & stack cropland probability/mask & distance to "major roads" grids
+# download & stack cropland probability/mask & distance to distance to buildings grids
 download("https://www.dropbox.com/s/83qwr9stamkrqfi/TZ_sample_grids.zip?raw=1", "TZ_sample_grids.zip", mode="wb")
 unzip("TZ_sample_grids.zip", overwrite=T)
 glist <- list.files(pattern="tif", full.names=T)
@@ -52,13 +59,13 @@ shape <- shapefile("TZA_adm3.shp")
 
 ## Drawing up a sampling plan {#samp-plan}
 
-Next is the sample frame setup and a working definition of the region of interest (ROI). Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a *"distance to building"* covariate. By neccessity, cropping activities are closely associated with the presence of buildings and humans. From a practical perspective this is also included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in Tanzania. However, one can always change the `bdt` (distance to building) variable in the script chunk to accommodate any other specific sampling frame coverage requirements. One could also use additional constraint variables where needed.
+Next is the sample frame setup and a working definition of the region of interest (ROI). Note that apart from the (GeoSurvey) cropland area mask for Rwanda, we have also included a "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the script chunk directly below to accommodate any other specific sampling frame coverage requirements. One could also use additional constraint variables such as steep slopes or other accessibility constraints where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
-# create a ROI image based on cropland mask and distance to nearest main roads
+# create a ROI image based on cropland mask and distance to nearest buildings grids
 cp <- 1    ## set cropland mask to 1
-bd <- 2.5  ## set maximum distance to the nearest "building" (in km)
+bd <- 2.5  ## set maximum sampling distance to the nearest "buildings" (in km)
 roi <- overlay(grids, fun=function(x) 
 {return(ifelse(x[1] >= cp && x[2] > 0 && x[2] <= bd, 1, 0))})
 
@@ -126,7 +133,7 @@ saveWidget(w, 'TZ_sample.html', selfcontained = T)
 
 Note that most field survey crews will need to be trained in GPS navigation prior to departing for surveys. However, the training can be usually be in a single day for multiple crews.
 
-You shall need the following equipment and materials:
+### You shall need the following equipment and materials:
 
 1. An Android phone or tablet.
 1. A separate GPS device (optional, but is highly recommended for field navigation).
@@ -137,7 +144,7 @@ You shall need the following equipment and materials:
 1. Sturdy, ~2-3 liter plastic/or paper bags, 2 bags for each soil sample.
 1. Sticky QR code sample labels, 2 for each soil sample.
 
-Before you go into the field:
+### Before you go into the field:
 
 *	Install ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
 * ODK Collect (to georeference, time stamp, and log in your soil sample)
