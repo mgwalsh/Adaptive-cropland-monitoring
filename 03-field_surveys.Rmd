@@ -1,8 +1,10 @@
 ---
-title: "Field surveys and physical sample collections"
+title: "Field surveys, observations and sample collections"
 author: M. G. Walsh
 date: "21/11/2020"
-output: html_document
+output:
+  html_document
+    css: style.css
 ---
 
 ```{r setup, include=FALSE}
@@ -11,9 +13,9 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Introduction {#fs-intro}
 
-This notebook illustrates procedures for conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides field observations and the physical measurements of any (physical) rock, water, soil, plant and potentially livestock fecal (and/or blood) samples, which can be georeferenced, measured and databased in a consistent manner.
+This notebook illustrates AfSIS procedures for conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides survey designs and procedures for physical measurements of any (physical) rock, water, soil, plant and/or livestock fecal or blood) samples, which can be georeferenced, measured and databased in a consistent manner.
 
-Field survey activities are fairly expensive to implement, but they also have particulary high information value for any subsequent analyses and cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, monitoring and experiments as occurring in 6 sequential and interdependent steps:
+Field survey activities are expensive to implement, but they also provide particulary high information value for any subsequent analyses and cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, observations, monitoring and experiments as occurring in 6 sequential and interdependent steps:
 
 1. Delineation of a geographical Region of Interest (RoI).
 1. Drawing up a spatially representative sample of locations from within the RoI, considering any potential field crew safety factors ... first-and-foremost!
@@ -22,13 +24,13 @@ Field survey activities are fairly expensive to implement, but they also have pa
 1. Sample processing and curation.
 1. Finally, consistently repeating and updating the previous 5 steps over time.
 
-The associated activities should to be carried out in sequence. But, the actual procedures can certainly be changed as different survey or monitoring priorities emerge over time. This chapter covers the 6 steps including example data, R-code and the relevant links to external open-source resources.
+The associated activities should be carried out in sequence; but, the actual procedures can certainly be changed as different survey or monitoring priorities emerge over time. This chapter covers the 6 steps including example data, R-code and the relevant links to external open-source resources.
 
 ## Delineating a region of interest {#roi}
 
-This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the objectives and constraints of the mapping and monitoring tasks at hand. 
+This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the immediate needs and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for physically sampling representative cropland areas of all of Rwanda. The ROI calculations for this example are shown in the chunk below. Note that cropland occurrences are based on comprehensive GeoSurveys, which were conducted in 2019-2020. The set up, packages and data needed for this exercise are also found below. You'll need the following R-packages to run the example:
+The following provides an example that is based on the need for physically sampling representative cropland areas of all of Rwanda. The ROI calculations for this example are shown in the chunk below. Note that cropland occurrences are based on comprehensive GeoSurveys, which were conducted in 2019 & 2020. The set up, packages and data needed for this exercise are also found below. You'll need the following R-packages to run the example:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -41,20 +43,19 @@ suppressPackageStartupMessages({
 })
 ```
 
-The data for running the Rwanda example are accessible via the following chunk:
+The data for running this Rwanda example are accessible via the following chunk:
 
 ```{r}
-# Data setup --------------------------------------------------------------
-# download & stack cropland probability/mask & distance to distance to buildings grids
-download("https://www.dropbox.com/s/83qwr9stamkrqfi/TZ_sample_grids.zip?raw=1", "TZ_sample_grids.zip", mode="wb")
-unzip("TZ_sample_grids.zip", overwrite=T)
+# download current Rwanda GeoSurvey predictions
+download("https://osf.io/u73pd?raw=1", "RW_GS_preds.zip", mode="wb")
+unzip("RW_GS_preds.zip", overwrite=T)
 glist <- list.files(pattern="tif", full.names=T)
 grids <- stack(glist)
 
 # download GADM-L3 shapefile (courtesy: http://www.gadm.org)
-download("https://www.dropbox.com/s/bhefsc8u120uqwp/TZA_adm3.zip?raw=1", "TZA_adm3.zip", mode="wb")
-unzip("TZA_adm3.zip", overwrite=T)
-shape <- shapefile("TZA_adm3.shp")
+download.file("https://www.dropbox.com/s/fhusrzswk599crn/RWA_level5.zip?raw=1", "RWA_level5.zip")
+unzip("RWA_level5.zip", overwrite=T)
+shape <- shapefile("gadm36_RWA_5.shp")
 ```
 
 ## Drawing up a sampling plan {#samp-plan}
@@ -65,7 +66,7 @@ Next is the sample frame setup and a working definition of the region of interes
 # Sample setup ------------------------------------------------------------
 # create a ROI image based on cropland mask and distance to nearest buildings grids
 cp <- 1    ## set cropland mask to 1
-bd <- 2.5  ## set maximum sampling distance to the nearest "buildings" (in km)
+bd <- 1  ## set maximum sampling distance to the nearest "buildings" (in km)
 roi <- overlay(grids, fun=function(x) 
 {return(ifelse(x[1] >= cp && x[2] > 0 && x[2] <= bd, 1, 0))})
 
