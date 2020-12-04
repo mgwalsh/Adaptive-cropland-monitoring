@@ -60,12 +60,12 @@ shape <- shapefile("gadm36_RWA_5.shp")
 
 ## Drawing up a sampling plan {#samp-plan}
 
-Next is the sample frame setup and a working definition of the region of interest (ROI). Note that apart from the (GeoSurvey) cropland area mask for Rwanda, we have also included a "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the script chunk directly below to accommodate any other specific sampling frame coverage requirements. One could also use additional constraint variables such as steep slopes or other accessibility constraints where needed.
+Next is the sample frame setup and a working definition of the region of interest (RoI). Note that apart from the (GeoSurvey) cropland area mask for Rwanda, we have also included a "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the script chunk directly below to accommodate any other specific sampling frame coverage requirements. One could also use additional constraint variables such as steep slopes or other accessibility constraints where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
 # create a ROI image based on cropland mask and distance to nearest buildings grids
-cp <- 1    ## set cropland mask to 1
+cp <- 1    ## set cropland mask to 1 (cropland present)
 bd <- 0.5  ## set maximum sampling distance to the nearest "buildings" (in km)
 roi <- overlay(grids, fun=function(x) 
 {return(ifelse(x[1] >= cp && x[2] > 0 && x[2] <= bd, 1, 0))})
@@ -77,7 +77,7 @@ index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
 ```
 
-This provides a plot of the ROI, and extracts the needed spatial coordinates of the intended sampling frame. The ROI can be plotted as a R raster object:
+This provides a plot of the RoI, and extracts the needed spatial coordinates of the intended sampling frame. The RoI can be plotted as a R raster object:
 
 ```{r}
 plot(roi, axes=F, legend=F)
@@ -152,19 +152,18 @@ Note that most field survey crews will need to be trained in GPS navigation prio
 1. A soil auger marked with colored tape at 20 and 50 cm from the tip.
 1. 2, 20-liter plastic buckets.
 1. A 5-liter plastic jerry can for water.
-1. A rope marked with colored tape at 2.82, 4.61 and 5.64 meters.
+1. A rope or cable marked with colored tape at 2.82, 4.61 and 5.64 meters.
 1. Sturdy, ~1-2 liter plastic containers for each soil sample.
-1. Sticky QR code sample labels, 2 for each soil sample container.
+1. Sticky QR code sample labels, 2 for each plastic soil/plant sample container.
 
 ### Before you go into the field:
 
-*	Install ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
-* KoBoCollect  (to georeference, time stamp, and log in your soil sample)
-* XZing barcode scanner (to read QR code labels)
-* GPS Essentials (if you are going to be using your phone or tablet for field navigation rather than a separate GPS unit).
+* Install the needed ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet): Use the following link to [KoBoCollect](https://support.kobotoolbox.org/kobocollect-android.html) for detailed instructions. 
+* something like XZing barcode scanner (to read QR code labels)
+* something like GPS Essentials (if you are going to be using your phone or tablet for field navigation rather than a separate GPS unit).
 
-You can locate the applications on Google Play by searching for them by name. Note that you will need an Internet connection for this. Once you have installed the software on your Android device: start ODK Collect and then set the server address that will link you to the “Soil sample” form:
-General Settings > Configure platform > URL. The General Settings menu can be accessed by tapping the <left> menu button on your device. 
+You can locate the applications on Google Play by searching for them by name. Note that you will need an Internet connection for this. Once you have installed the software on your Android device: start KoBoCollect and then set the server address that will link you to the form:
+General Settings > Server. The General Settings menu can be accessed by tapping the <left> menu button on your device. 
 
 * Don’t worry about entering a Username or Password. They are not needed.
 * Set the URL field to: http://??.
