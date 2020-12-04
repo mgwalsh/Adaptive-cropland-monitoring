@@ -1,5 +1,5 @@
 ---
-title: "Field surveys, observations and sample collections"
+title: "Field surveys, tags and sample collections"
 author: M. G. Walsh
 date: "21/11/2020"
 output:
@@ -13,9 +13,9 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Introduction {#fs-intro}
 
-This notebook illustrates AfSIS procedures for conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides survey designs and procedures for physical measurements of any (physical) rock, water, soil, plant and/or livestock fecal or blood) samples, which can be georeferenced, measured and databased in a consistent manner.
+This notebook illustrates AfSIS procedures and methods for conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides survey designs and procedures for physical measurements of any (physical) rock, water, soil, plant and/or livestock fecal or blood) samples, which can be georeferenced, measured and databased in a consistent manner.
 
-Field survey activities are expensive to implement, but they also provide particulary high information value for any subsequent analyses and cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, observations, monitoring and experiments as occurring in 6 sequential and interdependent steps:
+Field survey activities are expensive to implement, but they also provide particulary high information value for any subsequent analyses and cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, observations, monitoring and experiments as occurring in 6 interdependent steps:
 
 1. Delineation of a geographical Region of Interest (RoI).
 1. Drawing up a spatially representative sample of locations from within the RoI, considering any potential field crew safety factors ... first-and-foremost!
@@ -66,7 +66,7 @@ Next is the sample frame setup and a working definition of the region of interes
 # Sample setup ------------------------------------------------------------
 # create a ROI image based on cropland mask and distance to nearest buildings grids
 cp <- 1    ## set cropland mask to 1
-bd <- 1  ## set maximum sampling distance to the nearest "buildings" (in km)
+bd <- 0.5  ## set maximum sampling distance to the nearest "buildings" (in km)
 roi <- overlay(grids, fun=function(x) 
 {return(ifelse(x[1] >= cp && x[2] > 0 && x[2] <= bd, 1, 0))})
 
@@ -127,14 +127,14 @@ w <- leaflet() %>%
 w ## plot widget 
 
 # save widget
-saveWidget(w, 'TZ_sample.html', selfcontained = T)
+saveWidget(w, 'RW_sample.html', selfcontained = T)
 ```
 
 ## Setting up of standard field observation and measurement protocols {#om-protocols}
 
 Note that most field survey crews will need to be trained in GPS navigation prior to departing for surveys. However, the training can be usually be in a single day for multiple crews.
 
-### You shall need the following equipment and materials:
+### You will need the following equipment and materials:
 
 1. An Android phone or tablet.
 1. A separate GPS device (optional, but is highly recommended for field navigation).
@@ -142,8 +142,8 @@ Note that most field survey crews will need to be trained in GPS navigation prio
 1. 2, 20-liter plastic buckets.
 1. A 5-liter plastic jerry can for water.
 1. A rope marked with colored tape at 2.82, 4.61 and 5.64 meters.
-1. Sturdy, ~2-3 liter plastic/or paper bags, 2 bags for each soil sample.
-1. Sticky QR code sample labels, 2 for each soil sample.
+1. Sturdy, ~1-2 liter plastic containers for each soil sample.
+1. Sticky QR code sample labels, 2 for each soil sample container.
 
 ### Before you go into the field:
 
