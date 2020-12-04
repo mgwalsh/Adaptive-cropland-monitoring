@@ -1,5 +1,5 @@
 ---
-title: "Field surveys, tags and sample collections"
+title: "Field surveys, GeoTags and Physical Sample Collections"
 author: M. G. Walsh
 date: "21/11/2020"
 output:
@@ -13,24 +13,24 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Introduction {#fs-intro}
 
-This notebook illustrates AfSIS procedures and methods for conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides survey designs and procedures for physical measurements of any (physical) rock, water, soil, plant and/or livestock fecal or blood) samples, which can be georeferenced, measured and databased in a consistent manner.
+This notebook illustrates procedures and methods for conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides survey designs and procedures for physical measurements of any (physical) rock, water, soil, plant and/or livestock fecal or blood) samples, which can be georeferenced, measured and databased in a consistent manner.
 
-Field survey activities are expensive to implement, but they also provide particulary high information value for any subsequent analyses and cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, observations, monitoring and experiments as occurring in 6 interdependent steps:
+Field survey activities are quite expensive to implement, but they also provide particulary high information value for any subsequent analyses and cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, observations, monitoring and experiments as occurring in 6 interdependent steps:
 
 1. Delineation of a geographical Region of Interest (RoI).
 1. Drawing up a spatially representative sample of locations from within the RoI, considering any potential field crew safety factors ... first-and-foremost!
-1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally with e.g. [KoboToolbox](https://qed.ai/kt/).
+1. Setting up of standard field observation, measurement and/or experimental protocols that work digitally with e.g. [KoboToolbox](https://www.kobotoolbox.org).
 1. Conducting the field sampling and collecting the needed georeferenced observations, physical samples and/or monitoring data.
 1. Sample processing and curation.
 1. Finally, consistently repeating and updating the previous 5 steps over time.
 
-The associated activities should be carried out in sequence; but, the actual procedures can certainly be changed as different survey or monitoring priorities emerge over time. This chapter covers the 6 steps including example data, R-code and the relevant links to external open-source resources.
+The associated activities should be carried out in sequence; but, the actual variables that are enumerated can certainly be changed as different survey or monitoring priorities emerge over time. This notebook covers the 6 steps including example data, R-code and the relevant links to external open-source resources.
 
 ## Delineating a region of interest {#roi}
 
 This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an ROI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that ROI. A geograhically consistent field sampling frame should therefore always be defined in terms of the immediate needs and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for physically sampling representative cropland areas of all of Rwanda. The ROI calculations for this example are shown in the chunk below. Note that cropland occurrences are based on comprehensive GeoSurveys, which were conducted in 2019 & 2020. The set up, packages and data needed for this exercise are also found below. You'll need the following R-packages to run the example:
+The following provides an example that is based on the need for physically sampling representative cropland areas of all of Rwanda. The RoI calculations for this example are shown in the chunk below. Note that cropland occurrences are based on comprehensive GeoSurveys, which were conducted in 2019 & 2020. The set up, packages and data needed for this exercise are also found below. You'll need the following R-packages to run the example:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -109,25 +109,36 @@ x <- rmask[rsamp,1]
 y <- rmask[rsamp,2]
 xy <- data.frame(cbind(x,y))
 
-# attach GADM-L3 and above unit names from shape
+# Define unique grid ID's (GID)
+# Specify pixel scale (res.pixel, in m)
+res.pixel <- 10000
+
+# Grid ID (GID) definition
+xgid <- ceiling(abs(xy$x)/res.pixel)
+ygid <- ceiling(abs(xy$y)/res.pixel)
+gidx <- ifelse(xy$x<0, paste("W", xgid, sep=""), paste("E", xgid, sep=""))
+gidy <- ifelse(xy$y<0, paste("S", ygid, sep=""), paste("N", ygid, sep=""))
+GID <- paste(gidx, gidy, sep="")
+xy <- cbind(GID, xy)
+
+# attach GADM-L5 and above unit names from shape
 coordinates(xy) <- ~x+y
 crs(xy) <- "+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs"
 sloc <- spTransform(xy, CRS(proj4string(shape)))
 gadm <- sloc %over% shape
 sloc <- as.data.frame(sloc)
-samp <- cbind(gadm[ ,c(5,7,9)], sloc)
-colnames(samp) <- c("region", "district", "ward", "lon", "lat")
-write.csv(samp, "TZ_fsamp.csv", row.names = F)
+samp <- cbind(gadm[ ,c(4,6,8,10,12)], sloc)
+colnames(samp) <- c("province","district","sector","cell","village","gid","lon","lat")
+write.csv(samp, "RW_MS_sample.csv", row.names = F)
 
 # Sampling map widget -----------------------------------------------------
 # render map
-w <- leaflet() %>% 
+w <- leaflet() %>%
+  setView(lng = mean(samp$lon), lat = mean(samp$lat), zoom = 9) %>%
   addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
-  addCircleMarkers(samp$Lon, samp$Lat, clusterOptions = markerClusterOptions())
+  addCircleMarkers(samp$lon, samp$lat, clusterOptions = markerClusterOptions())
 w ## plot widget 
-
-# save widget
-saveWidget(w, 'RW_sample.html', selfcontained = T)
+saveWidget(w, 'RW_MS_sample.html', selfcontained = T) ## save widget
 ```
 
 ## Setting up of standard field observation and measurement protocols {#om-protocols}
@@ -136,7 +147,7 @@ Note that most field survey crews will need to be trained in GPS navigation prio
 
 ### You will need the following equipment and materials:
 
-1. An Android phone or tablet.
+1. An Android smart phone or tablet.
 1. A separate GPS device (optional, but is highly recommended for field navigation).
 1. A soil auger marked with colored tape at 20 and 50 cm from the tip.
 1. 2, 20-liter plastic buckets.
@@ -148,7 +159,7 @@ Note that most field survey crews will need to be trained in GPS navigation prio
 ### Before you go into the field:
 
 *	Install ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet):
-* ODK Collect (to georeference, time stamp, and log in your soil sample)
+* KoBoCollect  (to georeference, time stamp, and log in your soil sample)
 * XZing barcode scanner (to read QR code labels)
 * GPS Essentials (if you are going to be using your phone or tablet for field navigation rather than a separate GPS unit).
 
