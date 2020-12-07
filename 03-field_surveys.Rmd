@@ -30,7 +30,7 @@ The associated activities should be carried out in sequence; but, the actual var
 
 This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an RoI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that RoI. A geograhically consistent field sampling frame should therefore always be defined in terms of the immediate needs and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for physically sampling representative cropland areas of all of Tanzania. The RoI calculations for this example are shown in the chunk below. Note that cropland occurrences are based on comprehensive GeoSurveys, which were conducted between 2018 and 2020. The set up and data needed for this exercise are also found below. You'll need the following R-packages to run this  example:
+The following provides an example that is based on the need for physically sampling representative cropland areas of all of Tanzania. The RoI calculations for this example are shown in the chunk below. Note that cropland and building occurrences are based on comprehensive GeoSurveys, which were conducted between 2018 and 2020. The set up and data needed for this exercise are also found below. You'll need the following R-packages to run this example:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -46,6 +46,10 @@ suppressPackageStartupMessages({
 The data for running the example are accessible via the following:
 
 ```{r}
+# create a data folder in your current working directory
+dir.create("TZ_sample", showWarnings=F)
+setwd("./TZ_sample")
+
 # download current Tanzania GeoSurvey predictions
 download("https://osf.io/fdkz8?raw=1", "TZ_GS_preds.zip", mode="wb")
 unzip("TZ_GS_preds.zip", overwrite=T)
@@ -77,22 +81,22 @@ index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
 ```
 
-This provides a plot of the RoI, and extracts the needed spatial coordinates of the sampling frame. Note that these constarints are intended to keep the RoI within a generally accessible range for field surveyors (by car or on foot). The RoI can be plotted as a R raster object:
+This provides a plot of the RoI, and extracts the needed spatial coordinates of the sampling frame. Note that these constraints are intended to keep the RoI within a generally accessible range for field surveyors (by car or on foot). The RoI can be plotted as a raster object as:
 
 ```{r}
 plot(roi, axes=F, legend=F)
 ```
 
-The following chunk then performs the steps of drawing a spatially balanced sample from the specified RoI. We use the `lcube` package from the `BalancedSampling` library in R (R Core Team, 2017) to draw a representative sample here. The method implements the cube method of Deville and Tillé (2004), which allows sampling based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates and/or constraints. 
+The following chunk then performs the steps of drawing a spatially balanced point location sample from the RoI. We use the `lcube` package from the `BalancedSampling` library in R [R Core Team, (2017)](https://cran.univ-paris1.fr/web/packages/dplR/vignettes/intro-dplR.pdf) to draw a spatially representative sample here. The method implements the cube method of [Deville and Tillé (2004)](https://academic.oup.com/biomet/article-abstract/91/4/893/459329?redirectedFrom=fulltext), which allows sampling based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates and/or constraints. 
 
-In this particular case potential sample sites were selected for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread, which ensures that the observations are spread out rather than clustered with respect to the spatial coordinates see Grafström and Schelin (2014). The following chunk performs those calculations:
+In this particular case potential sample sites were selected purely for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread, ensuring that the observations are spread out rather than clustered with respect to the spatial coordinates see [Grafström and Schelin (2014)](https://cran.r-project.org/web/packages/BalancedSampling/index.html). The following chunk performs those calculations:
 
 ```{r}
 # Geographically balanced sampling ----------------------------------------
 # set sampling parameters
-N <- nrow(rmask) ## population size (in 250 m pixels)
-n <- round(N/16*0.1,0) ## set sample size (number of proposed sampling locations)
-p <- rep(n/N,N)  ## calculates the inclusion probabilities
+N <- nrow(rmask)        ## RoI/population size (in 250 m pixels)
+n <- round(N/16*0.1,0)  ## set the sample size (number of proposed sampling locations)
+p <- rep(n/N,N)         ## calculates the inclusion probabilities
 
 # draw geographically balanced sample
 set.seed(6405)                      ## sets repeatable randomization seed
@@ -118,18 +122,18 @@ xgid <- ceiling(abs(xy$x)/res.pixel)
 ygid <- ceiling(abs(xy$y)/res.pixel)
 gidx <- ifelse(xy$x<0, paste("W", xgid, sep=""), paste("E", xgid, sep=""))
 gidy <- ifelse(xy$y<0, paste("S", ygid, sep=""), paste("N", ygid, sep=""))
-GID <- paste(gidx, gidy, sep="")
-xy <- cbind(GID, xy)
+gid <- paste(gidx, gidy, sep="")
+xy <- cbind(gid, xy) ## attaches a grid ID (10*10 km) to the respective sample locations
 
-# attach GADM-L5 and above unit names from shape
+# attach GADM-L3 and above unit names from shape
 coordinates(xy) <- ~x+y
 crs(xy) <- "+proj=laea +ellps=WGS84 +lon_0=20 +lat_0=5 +units=m +no_defs"
 sloc <- spTransform(xy, CRS(proj4string(shape)))
 gadm <- sloc %over% shape
 sloc <- as.data.frame(sloc)
-samp <- cbind(gadm[ ,c(4,6,8,10,12)], sloc)
-colnames(samp) <- c("province","district","sector","cell","village","gid","lon","lat")
-write.csv(samp, "RW_MS_sample.csv", row.names = F)
+samp <- cbind(gadm[ ,c(5,7,9)], sloc)
+colnames(samp) <- c("Region", "District", "Ward", "gid", "lon", "lat")
+write.csv(samp, "TZ_sample.csv", row.names = F)
 
 # Sampling map widget -----------------------------------------------------
 # render map
@@ -138,8 +142,10 @@ w <- leaflet() %>%
   addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
   addCircleMarkers(samp$lon, samp$lat, clusterOptions = markerClusterOptions())
 w ## plot widget 
-saveWidget(w, 'RW_MS_sample.html', selfcontained = T) ## save widget
+saveWidget(w, 'TZ_MS_sample.html', selfcontained = T) ## save widget
 ```
+
+Note that the grid ID variable `gid` can be used to plan the logistics for field surveys. The grid ID should be the primary spatial georeference point on any given field survey day. Under this particular sampling plan there are ... in Tanzania.
 
 ## Setting up of standard field observation and measurement protocols {#om-protocols}
 
