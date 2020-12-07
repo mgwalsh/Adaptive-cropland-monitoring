@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Introduction {#fs-intro}
 
-This notebook illustrates procedures and methods for conducting field surveys and for collecting physical samples. This is the practical, field-based side-of-things, which provides survey designs and procedures for physical measurements of any (physical) rock, water, soil, plant and/or livestock fecal or blood) samples, which can be georeferenced, measured and databased in a consistent and reproducible manner.
+This notebook illustrates procedures and methods for conducting field surveys and for collecting and curating physical samples. This is the practical, field-based side-of-things, which provides survey designs and procedures for physical measurements of any (physical) rock, water, soil, plant and/or livestock fecal or blood) samples, which can be georeferenced, measured and databased in a consistent and reproducible manner.
 
 Field survey activities are quite expensive to implement; however, they also provide particulary high information value for any subsequent cropland management decisions. So, it is very important to plan and execute the associated field activities carefully. We can think of field surveys, observations, monitoring and experiments as occurring in 6 interdependent steps:
 
@@ -30,7 +30,7 @@ The associated activities should be carried out in sequence; but, the actual var
 
 This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an RoI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that RoI. A geograhically consistent field sampling frame should therefore always be defined in terms of the immediate needs and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for physically sampling representative cropland areas of all of Tanzania. The RoI calculations for this example are shown in the chunk below. Note that cropland occurrences are based on comprehensive GeoSurveys, which were conducted between 2018 & 2020. The set up and data needed for this exercise are also found below. You'll need the following R-packages to run the example:
+The following provides an example that is based on the need for physically sampling representative cropland areas of all of Tanzania. The RoI calculations for this example are shown in the chunk below. Note that cropland occurrences are based on comprehensive GeoSurveys, which were conducted between 2018 and 2020. The set up and data needed for this exercise are also found below. You'll need the following R-packages to run this  example:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -60,7 +60,7 @@ shape <- shapefile("TZA_adm3.shp")
 
 ## Drawing up a sampling plan {#samp-plan}
 
-Next is the sample frame setup and a working definition of the region of interest (RoI). Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the chunk directly below to accommodate any other specific sampling frame coverage requirements. For example, one could also use additional variables such as slope steepness or other accessibility constraints where needed.
+Next is the sample frame setup and a working definition of the region of interest (RoI). Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the chunk directly below to accommodate any other specific sampling frame coverage requirements. For example, you could also use additional variables such as slope steepness or other accessibility constraints where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
@@ -77,7 +77,7 @@ index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
 ```
 
-This provides a plot of the RoI, and extracts the needed spatial coordinates of the intended sampling frame. The RoI can be plotted as a R raster object:
+This provides a plot of the RoI, and extracts the needed spatial coordinates of the sampling frame. Note that these constarints are intended to keep the RoI within a generally accessible range for field surveyors (by car or on foot). The RoI can be plotted as a R raster object:
 
 ```{r}
 plot(roi, axes=F, legend=F)
