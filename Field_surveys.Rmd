@@ -174,4 +174,4 @@ General Settings > Server. The General Settings menu can be accessed by tapping 
 * Don’t worry about entering a Username or Password. They are not needed.
 * Set the URL field to e.g.: http://??.
 
-This allows you to download blank forms for use on your Android device. It also allows you to save any completed forms to a database on the server. To download the blank ODK Soil sample form to your device, follow these 3 steps:
+This allows you to download blank forms for use on your Android device. It also allows you to save any completed forms to a database on the KoBoToolbox server. To download the blank ODK Soil sample form to your device, follow these 3 steps:
