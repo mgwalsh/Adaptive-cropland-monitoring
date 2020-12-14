@@ -30,7 +30,7 @@ The associated activities should be carried out in sequence; but, the actual var
 
 This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an RoI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that RoI. A geograhically consistent field sampling frame should therefore always be defined in terms of the immediate needs and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for physically sampling representative cropland areas of all of Tanzania. The RoI calculations for this example are shown in the chunk below. Note that cropland and building occurrences are based on comprehensive GeoSurveys, which were conducted between 2018 and 2020. The set up and data needed for this exercise are also found below. You'll need the following R-packages to run this example:
+The following provides an example that is based on the need for physically sampling representative cropland areas of all of Tanzania. The RoI calculations for this example are shown in the chunk below. Note that cropland and building occurrences are based on comprehensive GeoSurveys, which were conducted between 2018 and 2020. The set up and data needed for this exercise are also found below. You'll need the following [R-packages](https://cran.univ-paris1.fr/web/packages/dplR/vignettes/intro-dplR.pdf) to run this example:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -64,7 +64,7 @@ shape <- shapefile("TZA_adm3.shp")
 
 ## Drawing up a sampling plan {#samp-plan}
 
-Next is the sample frame setup and a working definition of the region of interest (RoI). Note that apart from the (GeoSurvey) cropland area mask for Tanzania, we have also included a "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. From a practical perspective this is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the chunk directly below to accommodate any other specific sampling frame coverage requirements. For example, you could also use additional variables such as slope steepness or other accessibility constraints where needed.
+Next is the sample frame setup and a working definition of the region of interest (RoI). Note that apart from the cropland area mask for Tanzania, we have also included a GeoSurvey-based "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. From a practical perspective this variable is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the chunk directly below to accommodate any other specific sampling frame coverage requirements. For example, you could also use additional variables such as slope steepness or other accessibility constraints where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
@@ -81,7 +81,7 @@ index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
 ```
 
-This provides a plot of the RoI, and extracts the needed spatial coordinates of the sampling frame. Note that these constraints are intended to keep the RoI within a generally accessible range for field surveyors (by car or on foot). The RoI can be plotted as a raster object as:
+This provides a plot of the RoI, and extracts the needed spatial coordinates of the sampling frame. Note that these constraints are intended to keep the RoI within a generally accessible range for field surveyors (by car, motorcycle or on foot). The RoI can be plotted as a raster object as:
 
 ```{r}
 plot(roi, axes=F, legend=F)
@@ -89,7 +89,7 @@ plot(roi, axes=F, legend=F)
 
 The following chunk then performs the steps of drawing a spatially balanced point location sample from the RoI. We use the `lcube` package from the `BalancedSampling` library in R [R Core Team, (2017)](https://cran.univ-paris1.fr/web/packages/dplR/vignettes/intro-dplR.pdf) to draw a spatially representative sample here. The method implements the cube method of [Deville and Tillé (2004)](https://academic.oup.com/biomet/article-abstract/91/4/893/459329?redirectedFrom=fulltext), which allows sampling based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates and/or constraints. 
 
-In this particular case potential sample sites were selected purely for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread, ensuring that the observations are spread out rather than clustered with respect to the spatial coordinates see [Grafström and Schelin (2014)](https://cran.r-project.org/web/packages/BalancedSampling/index.html). The following chunk performs those calculations:
+In this particular case potential sample sites were selected purely for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread, ensuring that the observations are spread out rather than clustered with respect to the spatial coordinates, see [Grafström and Schelin (2014)](https://cran.r-project.org/web/packages/BalancedSampling/index.html). The following chunk performs those calculations:
 
 ```{r}
 # Geographically balanced sampling ----------------------------------------
@@ -104,7 +104,7 @@ B <- cbind(p, rmask[,1], rmask[,2]) ## specifies balancing variables
 rsamp <- cube(p, B)                 ## samples from the RoI/population using the cube method
 ```
 
-The sampling coordinates can also be exported as a GPS readable file, which allows survey crews to navigate to the planned locations in the field. It can also be plotted as a zoomable map using the `leaflet` package.
+The sampling coordinates can also be exported as a GPS readable file (see e.g., [GPSBabel](https://www.gpsbabel.org)), which allows survey crews to navigate to the planned survey locations in the field.
 
 ```{r}
 # Write files -------------------------------------------------------------
@@ -134,7 +134,11 @@ sloc <- as.data.frame(sloc)
 samp <- cbind(gadm[ ,c(5,7,9)], sloc)
 colnames(samp) <- c("Region", "District", "Ward", "gid", "lon", "lat")
 write.csv(samp, "TZ_sample.csv", row.names = F)
+```
 
+Note that the grid ID variable `GID` can be used to plan the logistics of the field surveys. The grid ID should be the primary spatial georeference point on any given field survey day. Under this particular sampling plan there are ... `GID` in Tanzania. You can also generate a zoomable map of the proposed sampling locations with `leaflet`. This can help with both navigation and survey planning.
+
+```{r}
 # Sampling map widget -----------------------------------------------------
 # render map
 w <- leaflet() %>%
@@ -145,31 +149,33 @@ w ## plot widget
 saveWidget(w, 'TZ_MS_sample.html', selfcontained = T) ## save widget
 ```
 
-Note that the grid ID variable `gid` can be used to plan the logistics for field surveys. The grid ID should be the primary spatial georeference point on any given field survey day. Under this particular sampling plan there are ... in Tanzania.
+## Setting up of standard field observation and sample collection protocols {#om-protocols}
 
-## Setting up of standard field observation and measurement protocols {#om-protocols}
+After careful GeoSurvey interpretations (see at: [GeoSurvey data prediction workflows (2020)](https://doi.org/10.17605/OSF.IO/VXC97), we currently use what we call [MobileSurvey]() to sample, observe, measure, and ground-validate the distribution of cropping systems, crop types and to collect georeferenced and time stamped physical (rock, soil, plant, livestock) samples and any other data that are relevant to adaptive cropland management interventions (e.g., the presence of soil erosion features and/or irrigation and soil conservation structures).
 
-Note that most field survey crews will need to be trained in GPS navigation prior to departing for surveys. However, the training can be usually be in a single day for multiple crews.
+MobileSurvey is “stop-and-measure” based, meaning that any observations & measurements (O&M) are done when you stop your car, motorbike or walk-in and do your observations and sample collections over a predefined area and record their georeference. As long as the underlying sampling frame that is used to determine locations is geographically representative of a given ROI, these data are suitable for generating unbiased, georefenced estimates of use-cases for crop distribution modeling, predictive soil and plant nutrient mapping, crop yield monitoring, agricultural input monitoring, electrification, mechanization and irrigation potentials and the development of environmental impact assessments.
+
+We also use similar (ODK-based) protocols for geotagging any rock, soil, plant and livestock biomarker samples at the locations that we visit. All physical samples receive *Universally Unique IDs* that are embedded in [QR-code labels](https://tag.qed.ai/sheet/) for each sample and are tagged with metadata and the relevant O&M in the field. This process also allows tracking any sample through various (MIR, XRF and/or wet chemistry) laboratory processes and to curate physical samples at your various laboratory’s sample storage facilities.
 
 ### You will need the following equipment and materials:
 
 1. An Android smart phone or tablet.
 1. A separate GPS device (optional, but highly recommended for field navigation).
-1. A soil auger marked with colored tape at 20 and 50 cm from the tip.
+1. At least one soil auger marked with colored tape at 20 and 50 cm from the tip.
 1. 2, 20-liter plastic buckets.
 1. A 5-liter plastic jerry can for water.
 1. A rope or cable marked with colored tape at 2.82, 4.61 and 5.64 meters.
-1. Sturdy, ~1-2 liter plastic containers for each soil sample.
-1. Sticky QR code sample labels, 2 for each plastic soil/plant sample container.
+1. Sturdy, recyclable ~1-2 liter plastic containers for each rock/soil/plant/livestock sample.
+1. Sticky QR code labels, 2 for each sample container.
 
 ### Before you go into the field:
 
 * Install the needed ODK forms. To use the ODK soil sample login form you initially need to install the following applications on your Android device (phone or tablet): Use the following link to [KoBoCollect](https://support.kobotoolbox.org/kobocollect-android.html) for detailed instructions. 
-* something like [XZing]() barcode scanner (to read QR code labels)
+* something like [XZing]() barcode scanner (to read QR code labels on your device).
 * something like [GPS Essentials]() (if you are going to be using your phone or tablet for field navigation rather than a separate GPS unit).
+* Note that most field survey crews will need to be trained in GPS navigation prior to departing for surveys. However, the training can be usually be in a single day for multiple crews.
 
-You can locate the applications on Google Play by searching for them by name. Note that you will need an Internet connection for this. Once you have installed the software on your Android device: start [KoBoCollect]() and then set the server address that will link you to the form:
-General Settings > Server. The General Settings menu can be accessed by tapping the <left> menu button on your device. 
+You can locate the needed apps on Google Play by searching for them by name. Note that you will need an Internet connection for this. Once you have installed the software on your Android device: start [KoBoCollect]() and then set the server address that will link you to the relevant forms: General Settings > Server. The General Settings menu can be accessed by tapping the <left> menu button on your device. 
 
 * Don’t worry about entering a Username or Password. They are not needed.
 * Set the URL field to e.g.: http://??.
