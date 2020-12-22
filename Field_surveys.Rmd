@@ -89,13 +89,13 @@ plot(roi, axes=F, legend=F)
 
 The following chunk then performs the steps of drawing a spatially balanced point location sample from the RoI. We use the `lcube` package from the `BalancedSampling` library in R [R Core Team, (2017)](https://cran.univ-paris1.fr/web/packages/dplR/vignettes/intro-dplR.pdf) to draw a spatially representative sample here. The method implements the cube method of [Deville and Tillé (2004)](https://academic.oup.com/biomet/article-abstract/91/4/893/459329?redirectedFrom=fulltext), which allows sampling based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates and/or constraints. 
 
-In this particular case potential sample sites were selected purely for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread, ensuring that the observations are spread out rather than clustered with respect to the spatial coordinates, see [Grafström and Schelin (2014)](https://cran.r-project.org/web/packages/BalancedSampling/index.html). The following chunk performs those calculations:
+In this particular case, sample sites were selected purely for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread. This ensures that the observations are spread out rather than clustered with respect to the spatial coordinates, see [Grafström and Schelin (2014)](https://cran.r-project.org/web/packages/BalancedSampling/index.html). The following chunk performs those calculations:
 
 ```{r}
 # Geographically balanced sampling ----------------------------------------
 # set sampling parameters
 N <- nrow(rmask)        ## RoI/population size (in 250 m pixels)
-n <- round(N/16*0.1,0)  ## set the sample size (number of proposed sampling locations)
+n <- round(N/16*0.1,0)  ## set the sample size (the number of proposed sampling locations)
 p <- rep(n/N,N)         ## calculates the inclusion probabilities
 
 # draw geographically balanced sample
@@ -104,7 +104,7 @@ B <- cbind(p, rmask[,1], rmask[,2]) ## specifies balancing variables
 rsamp <- cube(p, B)                 ## samples from the RoI/population using the cube method
 ```
 
-The sampling coordinates can also be exported as a GPS readable file (see e.g., [GPSBabel](https://www.gpsbabel.org)), which allows survey crews to navigate to the planned survey locations in the field.
+The proposed location coordinates and `GID` can be exported as a GPS readable file (see e.g., [GPSBabel](https://www.gpsbabel.org)), which allows survey crews to navigate to the planned survey locations in the field.
 
 ```{r}
 # Write files -------------------------------------------------------------
@@ -132,11 +132,11 @@ sloc <- spTransform(xy, CRS(proj4string(shape)))
 gadm <- sloc %over% shape
 sloc <- as.data.frame(sloc)
 samp <- cbind(gadm[ ,c(5,7,9)], sloc)
-colnames(samp) <- c("Region", "District", "Ward", "gid", "lon", "lat")
+colnames(samp) <- c("Region", "District", "Ward", "GID", "lon", "lat")
 write.csv(samp, "TZ_sample.csv", row.names = F)
 ```
 
-Note that the grid ID variable `GID` can be used to plan the logistics of the field surveys. The grid ID should be the primary spatial georeference point on any given field survey day. Under this particular sampling plan there are ... `GID` in Tanzania. You can also generate a zoomable map of the proposed sampling locations with `leaflet`. This can help with both navigation and survey planning.
+Note that the grid ID variable `GID` as well the `Region, District & Ward` administrative units are useful for planning the logistics of the field surveys. However, the `GID` should be the primary spatial georeference point on any given field survey day. Under this particular sampling plan there are ... `GID` in Tanzania. You can also generate a zoomable map of the proposed sampling locations with `leaflet`. This further helps with both navigation and survey planning.
 
 ```{r}
 # Sampling map widget -----------------------------------------------------
@@ -149,13 +149,13 @@ w ## plot widget
 saveWidget(w, 'TZ_MS_sample.html', selfcontained = T) ## save widget
 ```
 
-## Setting up of standard field observation and sample collection protocols {#om-protocols}
+## Setting up standard geotagging and physical sampling protocols {#os-protocols}
 
-After careful GeoSurvey interpretations (see at: [GeoSurvey data prediction workflows (2020)](https://doi.org/10.17605/OSF.IO/VXC97), we currently use what we call [MobileSurvey]() to sample, observe, measure, and ground-validate the distribution of cropping systems, crop types and to collect georeferenced and time stamped physical (rock, soil, plant, livestock) samples and any other data that are relevant to adaptive cropland management interventions (e.g., the presence of soil erosion features and/or irrigation and soil conservation structures).
+After careful GeoSurvey interpretations (e.g., see at: [GeoSurvey data prediction workflows (2020)](https://doi.org/10.17605/OSF.IO/VXC97), we currently use what we call [MobileSurvey]() to sample, observe, measure, and ground-validate the distribution of cropping systems, crop types and to collect georeferenced and time stamped physical (rock, soil, plant, livestock) samples and any other data that are relevant to adaptive cropland management interventions (e.g., the presence of soil erosion features and/or irrigation and soil conservation structures). They can also be used for registering various crop management trials. 
 
 MobileSurvey is “stop-and-measure” based, meaning that any observations & measurements (O&M) are done when you stop your car, motorbike or walk-in and do your observations and sample collections over a predefined area and record their georeference. As long as the underlying sampling frame that is used to determine locations is geographically representative of a given ROI, these data are suitable for generating unbiased, georefenced estimates of use-cases for crop distribution modeling, predictive soil and plant nutrient mapping, crop yield monitoring, agricultural input monitoring, electrification, mechanization and irrigation potentials and the development of environmental impact assessments.
 
-We also use similar (ODK-based) protocols for geotagging any rock, soil, plant and livestock biomarker samples at the locations that we visit. All physical samples receive *Universally Unique IDs* that are embedded in [QR-code labels](https://tag.qed.ai/sheet/) for each sample and are tagged with metadata and the relevant O&M in the field. This process also allows tracking any sample through various (MIR, XRF and/or wet chemistry) laboratory processes and to curate physical samples at your various laboratory’s sample storage facilities.
+You can also use similar protocols for geotagging any rock, soil, plant and livestock biomarker samples at the locations that you visit. All physical samples should receive *Universally Unique IDs* that are embedded in [QR-code labels](https://tag.qed.ai/sheet/) for each sample, which are tagged with metadata and the relevant O&M in the field. This process also allows tracking any sample through various (MIR, XRF and/or wet chemistry) laboratory processes and to curate physical samples at your various laboratory’s sample storage facilities.
 
 ### You will need the following equipment and materials:
 
