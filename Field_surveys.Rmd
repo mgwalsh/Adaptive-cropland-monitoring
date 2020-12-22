@@ -24,13 +24,13 @@ Field survey activities are quite expensive to implement; however, they also pro
 1. Sample processing and curation.
 1. Finally, consistently repeating and updating the previous 5 steps over time.
 
-The associated activities should be carried out in sequence; but, the actual variables that are enumerated can be changed as different survey or monitoring priorities emerge over time. This notebook covers the 6 steps including example data, R-code and the relevant links to external open-source resources.
+The associated activities should be carried out in sequence; but, the actual variables that are enumerated can be changed as different survey or monitoring priorities emerge over time. This notebook covers the 6 steps including example data, R-code and the relevant links to external open-source resources for field survey activities.
 
 ## Delineating a region of interest {#roi}
 
 This section describes setting up a field sampling plan that provides representative spatial coverage over any given landscape or *"Region of Interest"* (RoI). Selecting an RoI for ground sampling is a critical step, because it determines both the main and recurrent costs of any adaptive monitoring program as well as the resulting precision and accuracy of inferences and predictions that are made about that RoI. A geograhically consistent field sampling frame should therefore always be defined in terms of the immediate needs and constraints of the mapping and monitoring tasks at hand. 
 
-The following provides an example that is based on the need for physically sampling representative cropland areas of all of Tanzania. The RoI calculations for this example are shown in the chunk below. Note that cropland and building occurrences are based on comprehensive GeoSurveys, which were conducted between 2018 and 2020. The set up and data needed for this exercise are also found below. You'll need the following [R-packages](https://cran.univ-paris1.fr/web/packages/dplR/vignettes/intro-dplR.pdf) to run this example:
+The following provides an example that is based on the need for physically sampling representative cropland areas of all of Tanzania. The RoI calculations for this example are shown in the chunk below. Note that cropland and building occurrences are based on comprehensive GeoSurveys, which were conducted between 2018 and 2020. The set up and data needed for this exercise are also found below. You'll need the following [R-packages](https://cran.univ-paris1.fr/web/packages/dplR/vignettes/intro-dplR.pdf) to run this example.
 
 ```{r}
 suppressPackageStartupMessages({
@@ -64,7 +64,9 @@ shape <- shapefile("TZA_adm3.shp")
 
 ## Drawing up a sampling plan {#samp-plan}
 
-Next is the sample frame setup and a working definition of the region of interest (RoI). Note that apart from the cropland area mask for Tanzania, we have also included a GeoSurvey-based "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. From a practical perspective this variable is included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the chunk directly below to accommodate any other specific sampling frame coverage requirements. For example, you could also use additional variables such as slope steepness or other accessibility constraints where needed.
+Next is the sample frame setup and a working definition of the region of interest (RoI). Note that apart from the cropland area mask for Tanzania, we have also included a GeoSurvey-based "distance to buildings" covariate. By neccessity, cropping and other land management activities are closely associated with the presence of buildings and humans. 
+
+From a practical perspective this variable is also included because of the typically extreme logistics and potential hazards to field crews associated with collecting samples in remote, unpopulated locations. However, one can always change the `bd` (distance to buildings) variable in the chunk directly below to accommodate any other specific sampling frame coverage requirements. For example, you could also use additional variables such as slope steepness or other accessibility constraints where needed.
 
 ```{r}
 # Sample setup ------------------------------------------------------------
@@ -81,7 +83,7 @@ index <- as.data.frame(cbind(coord, index))
 rmask <- index[which(index$index == 1),]
 ```
 
-This provides a plot of the RoI, and extracts the needed spatial coordinates of the sampling frame. Note that these constraints are intended to keep the RoI within a generally accessible range for field surveyors (by car, motorcycle or on foot). The RoI can be plotted as a raster object as:
+This provides a plot of the RoI, and extracts the needed spatial coordinates of the sampling frame. Note that these constraints are intended to keep the RoI within a generally accessible range for field surveyors (by car, motorcycle or on foot). The RoI can be plotted as a simple raster object as:
 
 ```{r}
 plot(roi, axes=F, legend=F)
@@ -89,7 +91,7 @@ plot(roi, axes=F, legend=F)
 
 The following chunk then performs the steps of drawing a spatially balanced point location sample from the RoI. We use the `lcube` package from the `BalancedSampling` library in R [R Core Team, (2017)](https://cran.univ-paris1.fr/web/packages/dplR/vignettes/intro-dplR.pdf) to draw a spatially representative sample here. The method implements the cube method of [Deville and Tillé (2004)](https://academic.oup.com/biomet/article-abstract/91/4/893/459329?redirectedFrom=fulltext), which allows sampling based on the relevant inclusion probabilities while aiming for balance and spread with respect to speciﬁed covariates and/or constraints. 
 
-In this particular case, sample sites were selected purely for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread. This ensures that the observations are spread out rather than clustered with respect to the spatial coordinates, see [Grafström and Schelin (2014)](https://cran.r-project.org/web/packages/BalancedSampling/index.html). The following chunk performs those calculations:
+In this particular example, sample sites were selected purely for spatial balance, which entails that the mean coordinates of sample sites are close to the mean coordinates of all points in the sample frame and have adequate spatial spread. This ensures that the observations are spread out rather than clustered with respect to the spatial coordinates, see [Grafström and Schelin (2014)](https://cran.r-project.org/web/packages/BalancedSampling/index.html). The following chunk performs those calculations:
 
 ```{r}
 # Geographically balanced sampling ----------------------------------------
@@ -104,7 +106,7 @@ B <- cbind(p, rmask[,1], rmask[,2]) ## specifies balancing variables
 rsamp <- cube(p, B)                 ## samples from the RoI/population using the cube method
 ```
 
-The proposed location coordinates and `GID` can be exported as a GPS readable file (see e.g., [GPSBabel](https://www.gpsbabel.org)), which allows survey crews to navigate to the planned survey locations in the field.
+The proposed location coordinates and `GID` can be exported as a GPS readable file (see the options at e.g., [GPSBabel](https://www.gpsbabel.org)), with which survey crews can navigate to the planned locations in the field.
 
 ```{r}
 # Write files -------------------------------------------------------------
@@ -136,7 +138,13 @@ colnames(samp) <- c("Region", "District", "Ward", "GID", "lon", "lat")
 write.csv(samp, "TZ_sample.csv", row.names = F)
 ```
 
-Note that the grid ID variable `GID` as well the `Region, District & Ward` administrative units are useful for planning the logistics of the field surveys. However, the `GID` should be the primary spatial georeference point on any given field survey day. Under this particular sampling plan there are ... `GID` in Tanzania. You can also generate a zoomable map of the proposed sampling locations with `leaflet`. This further helps with both navigation and survey planning.
+Note that the grid ID variable `GID` as well as administrative unit names such as `Region, District & Ward` in this example are useful for planning the logistics of the field surveys. However, we recommend that `GID` should be the primary spatial georeference point on any given field survey day. In this particular sampling plan there are ... specified `GID` locations in Tanzania. You can check that with:
+
+```{r}
+
+```
+
+You can also generate a zoomable map of the proposed sampling locations with the `leaflet` package. This may help further with navigation and survey planning.
 
 ```{r}
 # Sampling map widget -----------------------------------------------------
